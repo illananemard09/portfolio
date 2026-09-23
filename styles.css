@@ -247,3 +247,4 @@ h1 em, h2 em { color: var(--accent); font-style: italic; font-weight: 500; }
   .cards, .events, .skills__cols { grid-template-columns: 1fr; }
   .timeline__item { padding-left: 24px; }
 }
+.edu__sub { margin-top: 28px; }

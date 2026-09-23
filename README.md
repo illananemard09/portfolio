@@ -14,10 +14,10 @@ python3 -m http.server 8000
 
 ## Customise
 
-- Replace every `[ ... ]` placeholder in `index.html` with your details.
+- Content lives directly in `index.html`.
 - Add a portrait at `images/portrait.jpg` and swap the `.photo-placeholder` block for an `<img>`.
 - Add event photos by setting `background-image` on each `.event__img`.
-- Put your CV at `cv.pdf` for the "Download CV" button.
+- To offer a CV download, add `cv.pdf` and a `<a href="cv.pdf" download>` button in the Contact section.
 
 ## Publish with GitHub Pages
 
