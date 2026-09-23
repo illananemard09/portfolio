@@ -2,16 +2,18 @@
 
 // Live overlays drawn on top of the café photo.
 import { motion } from "framer-motion";
+import { Wallpaper } from "./os/Wallpaper";
 
 export function LaptopScreenPreview({ cursorTarget }: { cursorTarget: boolean }) {
   return (
-    <div className="relative h-full w-full overflow-hidden" style={{ background: "radial-gradient(120% 90% at 20% 10%, #f07a5f 0%, transparent 45%), radial-gradient(90% 90% at 90% 90%, #2a2724 0%, transparent 60%), linear-gradient(135deg, #e0482c 0%, #7a2c1c 45%, #121110 100%)" }}>
+    <div className="relative h-full w-full overflow-hidden bg-[#1d2b78]">
+      <Wallpaper className="absolute inset-0 h-full w-full" />
       <div className="absolute inset-x-0 top-0 h-[4%] bg-black/25" />
-      <p className="absolute inset-x-0 top-[30%] text-center font-display text-[min(3.6vw,44px)] font-light italic leading-none tracking-[-0.04em] text-white/25">see you at the next idea</p>
       {/* Desktop shortcuts */}
       <div className="absolute right-[3%] top-[9%] flex flex-col items-center gap-[1.5vw]">
-        <span className="h-[3.2vw] max-h-10 w-[3.6vw] max-w-11 rounded-[18%] bg-[#e0482c] shadow" />
-        <span className="h-[3vw] max-h-9 w-[3.6vw] max-w-11 rounded-[12%] bg-[#79bdf7] shadow" />
+        <span className="h-[2.4vw] max-h-8 w-[2.8vw] max-w-9 rounded-[18%] bg-[#e0482c] shadow" />
+        <span className="h-[2.6vw] max-h-9 w-[2.2vw] max-w-8 rounded-[8%] bg-white shadow" />
+        <span className="h-[2.6vw] max-h-9 w-[2.2vw] max-w-8 rounded-[8%] bg-white shadow" />
       </div>
       {/* Mini dock */}
       <div className="absolute bottom-[3%] left-1/2 flex h-[9%] -translate-x-1/2 items-center gap-[0.6vw] rounded-[20%/50%] bg-white/25 px-[1%]">

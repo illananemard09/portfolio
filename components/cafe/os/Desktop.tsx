@@ -7,6 +7,7 @@ import { Calendar, Files, Mail, Notes, QuickLook } from "./Apps";
 import { OSContext, useOS as useOSApi, type OSApi, type WinKind } from "./context";
 import { DocIcon, docs, DocView, type Doc } from "./docs";
 import { AppIcon, appNames, type AppId } from "./icons";
+import { Wallpaper } from "./Wallpaper";
 import { Safari, type SafariPage } from "./Safari";
 import { Window } from "./Window";
 
@@ -188,15 +189,8 @@ export function Desktop({ onExit, initialApp }: { onExit: () => void; initialApp
         ref={root}
         tabIndex={-1}
         className="relative h-full w-full overflow-hidden outline-none font-[-apple-system,BlinkMacSystemFont,'Helvetica_Neue',sans-serif] text-[13px]"
-        style={{
-          background:
-            "radial-gradient(120% 90% at 20% 10%, #f07a5f 0%, transparent 45%), radial-gradient(90% 90% at 90% 90%, #2a2724 0%, transparent 60%), linear-gradient(135deg, #e0482c 0%, #7a2c1c 45%, #121110 100%)",
-        }}
       >
-        {/* Wallpaper wordmark */}
-        <p aria-hidden className="pointer-events-none absolute inset-x-0 top-[30%] text-center font-display text-[clamp(40px,9vw,120px)] font-light italic leading-none tracking-[-0.05em] text-white/15">
-          see you at the next idea
-        </p>
+        <Wallpaper className="pointer-events-none absolute inset-0 h-full w-full" />
 
         {/* Menu bar */}
         {!compact && (

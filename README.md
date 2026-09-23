@@ -34,7 +34,7 @@ components/
 1. **Illana's world:** a collage of stickers on espresso brown (a name tag, an all-access pass, a croissant, a latte, an event ticket, a métro ticket, a beret, a paper flower, a coffee bean, a café receipt, a stamp and a polaroid). Drag them around on desktop. Tap one to read a fact.
 2. **Intro:** "Made in France, now in Melbourne…" lights up word by word as you scroll.
 3. **Interlude:** "One flat white, one big idea. Plan it, then make it happen." on cream.
-4. **The café:** a photo of a sunny café table (`public/images/cafe.jpg`) comes into focus as you scroll. Objects trace a white outline on hover or tap, and the laptop screen is live. On phones the photo scrolls sideways. To sharpen it, replace `cafe.jpg` with a full-resolution 16:9 version of the same photo.
+4. **The café:** a photo of a sunny café table (`public/images/cafe.jpg`) comes into focus as you scroll. Objects trace a white outline on hover or tap, and the laptop screen is live. On phones the photo scrolls sideways.
 5. **The laptop:** a working desktop. **Each file on it is a piece of the CV**: one PDF per role (`2024_LexisNexis_France.pdf`…), plus `CV_Illana_Nemard.pdf`, `About_me.txt`, `Contact.vcf`, `Education.pdf`, `Skills_Toolkit.pdf`, `Languages.txt` and a *Case studies* folder. Files open in Preview. Safari, Mail, Notes, Calendar and Files work too.
 The page ends at the café table; contact lives inside the laptop (Contact.vcf, the Safari contact tab, Mail).
 

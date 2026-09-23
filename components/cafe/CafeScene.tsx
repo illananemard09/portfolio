@@ -11,23 +11,23 @@ import { Desktop } from "./os/Desktop";
 const cine = [0.65, 0, 0.35, 1] as const;
 const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-/** The café photograph. Replace public/images/cafe.jpg with a full-resolution version (16:9) to sharpen it. */
+/** The café photograph (1680 × 944). The outlines below are traced on this exact image. */
 const PHOTO = `${base}/images/cafe.jpg`;
 
 type Act = "laptop" | "coffee" | "mouse" | "notebook" | "sugar" | "flowers" | "espresso" | "pastry";
 type Egg = "sugar" | "flowers" | "espresso" | "pastry" | "corner";
 const EGGS: Egg[] = ["sugar", "flowers", "espresso", "pastry", "corner"];
 
-// Outlines traced over the photo, in its own pixel space (viewBox 1592 × 896).
+// Outlines traced over the photo, in its own pixel space (1680 × 944).
 const objects: { act: Act; label: string; d: string }[] = [
-  { act: "laptop", label: "Open the laptop", d: "M490 336Q476 336 476 350L473 640L408 752Q402 772 424 772L1006 772Q1028 772 1020 752L963 640L960 350Q960 336 946 336Z" },
-  { act: "coffee", label: "Sip the coffee", d: "M128 624Q128 600 236 598Q338 598 340 622L341 634Q384 626 384 660Q382 694 340 694L336 704Q384 714 386 738Q384 792 238 792Q92 792 92 738Q94 712 136 702Z" },
-  { act: "mouse", label: "Click the mouse — it controls the laptop", d: "M1040 690Q1036 668 1072 664Q1140 664 1152 698Q1158 728 1116 732Q1054 730 1040 690Z" },
-  { act: "notebook", label: "Read the notebook", d: "M1206 652L1560 640L1592 652L1592 808L1560 806L1250 800L1222 792Z" },
-  { act: "sugar", label: "A sugar packet", d: "M1090 792L1128 764L1266 792L1240 836L1098 810Z" },
-  { act: "flowers", label: "Fresh flowers", d: "M1300 440Q1318 380 1420 378Q1536 382 1540 452Q1536 500 1472 516L1472 624Q1470 642 1412 642Q1352 642 1352 624L1352 516Q1300 496 1300 440Z" },
-  { act: "espresso", label: "The espresso machine", d: "M806 140L1030 140Q1044 140 1046 156L1050 318Q1050 334 1034 334L804 334Q790 334 790 318L792 156Q792 140 806 140Z" },
-  { act: "pastry", label: "The croissants", d: "M1272 206L1592 206L1592 362L1272 362Z" },
+  { act: "laptop", label: "Open the laptop", d: "M512 352Q500 352 500 364L494 676L432 780Q426 800 446 802L1058 802Q1080 800 1074 780L1018 676L1012 364Q1012 352 1000 352Z" },
+  { act: "coffee", label: "Sip the coffee", d: "M136 650Q140 626 245 626Q352 628 355 650L356 668Q405 662 404 700Q400 735 356 740L354 742Q405 752 404 778Q398 820 248 822Q92 820 90 776Q92 750 138 742Z" },
+  { act: "mouse", label: "Click the mouse — it controls the laptop", d: "M1086 712Q1090 694 1140 696Q1210 700 1213 736Q1212 768 1160 768Q1100 764 1086 712Z" },
+  { act: "notebook", label: "Read the notebook", d: "M1265 682L1500 674L1680 672L1680 856L1560 850L1278 846Z" },
+  { act: "sugar", label: "A sugar packet", d: "M1150 838L1198 806L1338 846L1296 882Z" },
+  { act: "flowers", label: "Fresh flowers", d: "M1362 470Q1360 390 1440 392Q1500 360 1560 404Q1632 420 1628 486Q1600 540 1540 540L1548 560Q1560 610 1552 660Q1540 682 1490 682Q1440 682 1430 660Q1424 610 1440 560L1446 540Q1372 530 1362 470Z" },
+  { act: "espresso", label: "The espresso machine", d: "M822 140L1100 140Q1112 140 1112 152L1114 340L818 340L816 152Q816 140 822 140Z" },
+  { act: "pastry", label: "The croissants", d: "M1335 222L1680 222L1680 378L1335 378Z" },
 ];
 
 /** `pan` (0 → 1): the camera racks focus onto the table as you scroll in. */
@@ -189,8 +189,8 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
       <div
         className={`wrap pointer-events-none relative z-10 pb-6 pt-24 text-center transition-opacity duration-500 lg:absolute lg:inset-x-0 lg:top-0 lg:pb-0 lg:pt-[5vh] ${mode === "table" && arrived ? "" : "lg:opacity-0"}`}
       >
-        <p className="eyebrow text-ink/50 lg:text-white/80">(10) — Table 07 · {person.location.split(",")[0]}</p>
-        <p className="mx-auto mt-2 max-w-[24ch] font-display text-[clamp(24px,2.4vw,38px)] font-light italic leading-tight lg:text-white lg:[text-shadow:0_2px_20px_rgba(40,25,10,.45)]">
+        <p className="eyebrow text-ink/55">(10) — Table 07 · {person.location.split(",")[0]}</p>
+        <p className="mx-auto mt-2 max-w-[24ch] font-display text-[clamp(24px,2.4vw,38px)] font-light italic leading-tight lg:[text-shadow:0_1px_18px_rgba(255,250,240,.9)]">
           Everything on this table is clickable.
         </p>
       </div>
@@ -211,16 +211,16 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
               />
 
               {/* The laptop's screen is live */}
-              <div ref={screenRef} className="absolute left-[30.3%] top-[39.6%] h-[29.9%] w-[29.5%] overflow-hidden rounded-[2px]" aria-hidden>
+              <div ref={screenRef} className="absolute left-[30.18%] top-[39.51%] h-[30.4%] w-[29.58%] overflow-hidden rounded-[2px]" aria-hidden>
                 <LaptopScreenPreview cursorTarget={mouseRun} />
               </div>
 
-              <div className="pointer-events-none absolute left-[9%] top-[46%] h-[20%] w-[11%]">
+              <div className="pointer-events-none absolute left-[9.5%] top-[49%] h-[18%] w-[10%]">
                 <Steam strong={steam} />
               </div>
 
               {/* Objects outline themselves on hover, focus or tap */}
-              <svg viewBox="0 0 1592 896" preserveAspectRatio="none" className={`cafe-objs absolute inset-0 h-full w-full overflow-visible ${intro ? "is-intro" : ""}`}>
+              <svg viewBox="0 0 1680 944" preserveAspectRatio="none" className={`cafe-objs absolute inset-0 h-full w-full overflow-visible ${intro ? "is-intro" : ""}`}>
                 {objects.map((o) => (
                   <g
                     key={o.act}
