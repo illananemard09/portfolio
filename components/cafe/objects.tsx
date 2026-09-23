@@ -272,17 +272,3 @@ export function BurgundyNotebook() {
     </div>
   );
 }
-
-export function PlusMarker({ label }: { label: string }) {
-  return (
-    <span aria-hidden className="pointer-events-none absolute z-10 flex items-center gap-2">
-      <span className="relative grid h-7 w-7 place-items-center rounded-full border border-black/10 bg-white/90 text-[16px] font-light leading-none text-[#121110] shadow-[0_4px_14px_rgba(40,25,10,.35)] backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:bg-[#e0482c] group-hover:text-white">
-        <span className="absolute inset-0 animate-ping rounded-full border-2 border-white/80 [animation-duration:2.4s]" />
-        +
-      </span>
-      <span className="hidden whitespace-nowrap rounded-full bg-white/90 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-[#121110] opacity-0 shadow transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 lg:block">
-        {label}
-      </span>
-    </span>
-  );
-}

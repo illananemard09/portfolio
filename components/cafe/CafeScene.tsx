@@ -6,7 +6,7 @@ import { person } from "@/content/site";
 import { useSmoothScroll } from "../ui/SmoothScroll";
 import { Backdrop } from "./Backdrop";
 import { NotebookOverlay } from "./NotebookOverlay";
-import { BurgundyNotebook, Cup, LaptopBase, LaptopScreenPreview, Mouse, Pen, Phone, PlusMarker, Steam, Sugar, Sunglasses } from "./objects";
+import { BurgundyNotebook, Cup, LaptopBase, LaptopScreenPreview, Mouse, Pen, Phone, Steam, Sugar, Sunglasses } from "./objects";
 import { Desktop } from "./os/Desktop";
 
 const cine = [0.65, 0, 0.35, 1] as const;
@@ -14,13 +14,12 @@ const cine = [0.65, 0, 0.35, 1] as const;
 type Egg = "sticker" | "sugar" | "flowers" | "espresso" | "board" | "corner";
 const EGGS: Egg[] = ["sticker", "sugar", "flowers", "espresso", "board", "corner"];
 
-/** A clickable object on the table, marked with a "+" like a shoppable photo. */
+/** A clickable object on the table: it outlines itself on hover (see .cafe-obj in globals.css). */
 function Hotspot({
   label,
   hint,
   onClick,
   className,
-  marker = { left: "50%", top: "20%" },
   children,
   z = 2,
 }: {
@@ -28,7 +27,6 @@ function Hotspot({
   hint: string;
   onClick: () => void;
   className: string;
-  marker?: { left: string; top: string };
   children?: React.ReactNode;
   z?: number;
 }) {
@@ -37,19 +35,14 @@ function Hotspot({
       type="button"
       aria-label={label}
       onClick={onClick}
-      data-cursor={hint}
-      className={`group absolute block rounded-md outline-offset-4 ${className}`}
+      title={hint}
+      className={`cafe-obj group absolute block rounded-md outline-none ${children ? "" : "cafe-obj--area"} ${className}`}
       style={{ zIndex: z }}
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
       {children}
-      <span className="absolute" style={{ left: marker.left, top: marker.top }}>
-        <span className="absolute -translate-x-1/2 -translate-y-1/2">
-          <PlusMarker label={hint} />
-        </span>
-      </span>
     </motion.button>
   );
 }
@@ -109,7 +102,7 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
   // On phones the table is wider than the screen: start centred on the laptop.
   useEffect(() => {
     const el = scrollerRef.current;
-    if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+    if (el && window.matchMedia("(max-width: 1023px)").matches) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
   }, []);
 
   const openLaptop = useCallback(
@@ -199,13 +192,13 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
       >
         <p className="eyebrow text-ink/50">(10) — Table 07 · {person.location.split(",")[0]}</p>
         <p className="mx-auto mt-2 max-w-[22ch] font-display text-[clamp(24px,2.4vw,38px)] font-light italic leading-tight">
-          Everything on this table is clickable.
+          Hover the objects. Everything on this table is clickable.
         </p>
       </div>
 
       <div
         ref={scrollerRef}
-        className="no-scrollbar relative h-[72svh] min-h-[380px] overflow-x-auto overflow-y-hidden overscroll-x-contain lg:h-[100svh] lg:min-h-[620px] lg:overflow-hidden"
+        className="no-scrollbar relative h-[72svh] min-h-[380px] overflow-x-auto overflow-y-hidden overscroll-x-contain lg:h-[100svh] lg:min-h-[620px] lg:overflow-clip"
         onPointerMove={(e) => {
           if (e.pointerType !== "mouse") return;
           const r = e.currentTarget.getBoundingClientRect();
@@ -230,11 +223,11 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
             </motion.div>
 
             {/* Background details that hide a little something */}
-            <Hotspot label="The espresso machine" hint="One more?" className="left-[18%] top-[34%] h-[19%] w-[11%]" marker={{ left: "50%", top: "30%" }}
+            <Hotspot label="The espresso machine" hint="One more?" className="left-[18%] top-[34%] h-[19%] w-[11%]"
               onClick={() => { discover("espresso"); say("Double espresso, no sugar. The fuel behind every run-of-show."); }} z={1} />
-            <Hotspot label="The brand wall" hint="Brands" className="left-[68.7%] top-[12%] h-[22%] w-[17%]" marker={{ left: "88%", top: "12%" }}
+            <Hotspot label="The brand wall" hint="Brands" className="left-[68.7%] top-[12%] h-[22%] w-[17%]"
               onClick={() => { discover("board"); say("LexisNexis, Pulsalys, Pimms, L'atelier du Relieur, Spiero, Strass Events — and yours next?"); }} z={1} />
-            <Hotspot label="Fresh flowers" hint="Smell" className="left-[84%] top-[47%] h-[31%] w-[10%]" marker={{ left: "50%", top: "22%" }}
+            <Hotspot label="Fresh flowers" hint="Smell" className="left-[84%] top-[47%] h-[31%] w-[10%]"
               onClick={() => { discover("flowers"); say("Fresh flowers on every event table. Details are the design."); }} z={2} />
 
             {/* Laptop */}
@@ -243,8 +236,7 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
                 type="button"
                 onClick={() => openLaptop()}
                 aria-label="Open the MacBook — an interactive desktop"
-                data-cursor="Open"
-                className="group relative block w-full rounded-t-[12px] outline-offset-4"
+                className="cafe-obj group relative block w-full rounded-t-[12px] outline-none"
                 whileHover={{ y: -3 }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
               >
@@ -253,9 +245,6 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
                     <LaptopScreenPreview cursorTarget={mouseRun} />
                   </div>
                 </div>
-                <span className="absolute left-[50%] top-[12%]">
-                  <span className="absolute -translate-x-1/2 -translate-y-1/2"><PlusMarker label="Open the laptop" /></span>
-                </span>
               </motion.button>
               <div className="relative -mt-px">
                 <LaptopBase />
@@ -271,7 +260,7 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
               </div>
             </div>
 
-            <Hotspot label="Take a sip of coffee" hint="Sip" className="left-[11%] top-[63%] w-[15%]" marker={{ left: "46%", top: "22%" }} onClick={clickCoffee} z={4}>
+            <Hotspot label="Take a sip of coffee" hint="Sip" className="left-[11%] top-[63%] w-[15%]" onClick={clickCoffee} z={4}>
               <div className="relative aspect-[200/170]">
                 <div className="pointer-events-none absolute -top-[70%] left-[22%] h-[90%] w-[50%]">
                   <Steam strong={coffeeClicks > 0 && coffeeClicks < 3} />
@@ -280,29 +269,29 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
               </div>
             </Hotspot>
 
-            <Hotspot label="A sugar packet" hint="Sweet" className="left-[27.5%] top-[80%] w-[3.4%] rotate-[14deg]" marker={{ left: "50%", top: "50%" }}
+            <Hotspot label="A sugar packet" hint="Sweet" className="left-[27.5%] top-[80%] w-[3.4%] rotate-[14deg]"
               onClick={() => { discover("sugar"); say("Sweet. You're the kind of person who notices details — we'd get along."); }} z={4}>
               <Sugar />
             </Hotspot>
 
-            <Hotspot label="The phone — read the new message" hint={phoneLit ? "Reply" : "Unlock"} className="left-[41%] top-[77%] w-[5.4%] -rotate-[8deg]" marker={{ left: "50%", top: "45%" }} onClick={clickPhone} z={5}>
+            <Hotspot label="The phone — read the new message" hint={phoneLit ? "Reply" : "Unlock"} className="left-[41%] top-[77%] w-[5.4%] -rotate-[8deg]" onClick={clickPhone} z={5}>
               <Phone lit={phoneLit} />
             </Hotspot>
 
-            <Hotspot label="Sunglasses — switch to golden hour" hint={golden ? "Daylight" : "Golden hour"} className="left-[50%] top-[80%] w-[11%] rotate-[4deg]" marker={{ left: "50%", top: "40%" }}
+            <Hotspot label="Sunglasses — switch to golden hour" hint={golden ? "Daylight" : "Golden hour"} className="left-[50%] top-[80%] w-[11%] rotate-[4deg]"
               onClick={() => { setGolden((g) => !g); say(golden ? "Back to daylight." : "Golden hour in Melbourne. The best light for recap photos."); }} z={5}>
               <div className="aspect-[220/90]"><Sunglasses /></div>
             </Hotspot>
 
-            <Hotspot label="Click the mouse — it controls the laptop" hint="Click" className="left-[67%] top-[64%] w-[3.4%] rotate-[8deg]" marker={{ left: "50%", top: "40%" }} onClick={clickMouse} z={4}>
+            <Hotspot label="Click the mouse — it controls the laptop" hint="Click" className="left-[67%] top-[64%] w-[3.4%] rotate-[8deg]" onClick={clickMouse} z={4}>
               <Mouse />
             </Hotspot>
 
-            <Hotspot label="Open the notebook" hint="Read" className="left-[68%] top-[74%] w-[15%] rotate-[-4deg]" marker={{ left: "50%", top: "45%" }} onClick={() => setNotebook(true)} z={4}>
+            <Hotspot label="Open the notebook" hint="Read" className="left-[68%] top-[74%] w-[15%] rotate-[-4deg]" onClick={() => setNotebook(true)} z={4}>
               <BurgundyNotebook />
             </Hotspot>
 
-            <Hotspot label="Pick up the pen" hint="Write" className="left-[83%] top-[80%] w-[11%]" marker={{ left: "50%", top: "50%" }} onClick={() => setPenLine((n) => n + 1)} z={5}>
+            <Hotspot label="Pick up the pen" hint="Write" className="left-[83%] top-[80%] w-[11%]" onClick={() => setPenLine((n) => n + 1)} z={5}>
               <motion.div key={penLine} className="rotate-[-38deg]" animate={penLine && !reduce ? { x: [0, 8, -6, 10, 0], y: [0, -3, 2, -2, 0], rotate: [0, -3, 2, -2, 0] } : undefined} transition={{ duration: 1.6 }}>
                 <Pen />
               </motion.div>
@@ -344,7 +333,7 @@ export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
       </div>
 
       <p className="wrap pb-2 pt-3 text-center eyebrow text-ink/45 lg:hidden">
-        ← Swipe to explore · {found.length ? `secrets ${found.length}/${EGGS.length}` : "tap the +"} →
+        ← Swipe to explore · {found.length ? `secrets ${found.length}/${EGGS.length}` : "tap the objects"} →
       </p>
 
       <AnimatePresence>
