@@ -1,102 +1,40 @@
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const body = document.body;
 
-/* ---------- Background: event lights (bokeh + sweeping spotlights) ---------- */
-const canvas = document.querySelector(".lights");
-const ctx = canvas.getContext("2d");
-const palette = ["224,122,95", "242,195,139", "255,255,255", "140,120,220"];
-let width, height, dpr, particles;
-const pointer = { x: 0, y: 0 };
-
-function resize() {
-  dpr = Math.min(window.devicePixelRatio || 1, 2);
-  width = window.innerWidth;
-  height = window.innerHeight;
-  canvas.width = width * dpr;
-  canvas.height = height * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-  const count = width < 760 ? 35 : 70;
-  particles = Array.from({ length: count }, () => ({
-    x: Math.random() * width,
-    y: Math.random() * height,
-    r: 2 + Math.random() * 38,
-    depth: 0.2 + Math.random(),
-    vx: (Math.random() - 0.5) * 0.15,
-    vy: -0.05 - Math.random() * 0.2,
-    alpha: 0.05 + Math.random() * 0.22,
-    phase: Math.random() * Math.PI * 2,
-    color: palette[Math.floor(Math.random() * palette.length)],
-  }));
-}
-
-function drawSpotlight(originX, angle, color) {
-  const length = height * 1.3;
-  const spread = 0.22;
-  const grad = ctx.createLinearGradient(originX, 0, originX + Math.sin(angle) * length, Math.cos(angle) * length);
-  grad.addColorStop(0, `rgba(${color},0.22)`);
-  grad.addColorStop(1, `rgba(${color},0)`);
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.moveTo(originX, -10);
-  ctx.lineTo(originX + Math.sin(angle - spread) * length, Math.cos(angle - spread) * length);
-  ctx.lineTo(originX + Math.sin(angle + spread) * length, Math.cos(angle + spread) * length);
-  ctx.closePath();
-  ctx.fill();
-}
-
-function frame(time) {
-  const t = time / 1000;
-  ctx.globalCompositeOperation = "source-over";
-  ctx.fillStyle = "#0b0e1a";
-  ctx.fillRect(0, 0, width, height);
-  ctx.globalCompositeOperation = "lighter";
-
-  drawSpotlight(width * 0.2, Math.sin(t * 0.35) * 0.5 - 0.25 + pointer.x * 0.1, "224,122,95");
-  drawSpotlight(width * 0.8, Math.sin(t * 0.3 + 2) * 0.5 + 0.25 + pointer.x * 0.1, "242,195,139");
-
-  for (const p of particles) {
-    p.x += p.vx;
-    p.y += p.vy;
-    if (p.y < -p.r * 2) { p.y = height + p.r; p.x = Math.random() * width; }
-    if (p.x < -p.r * 2) p.x = width + p.r;
-    if (p.x > width + p.r * 2) p.x = -p.r;
-
-    const x = p.x - pointer.x * 30 * p.depth;
-    const y = p.y - pointer.y * 30 * p.depth;
-    const a = p.alpha * (0.6 + 0.4 * Math.sin(t * 1.2 + p.phase));
-    const g = ctx.createRadialGradient(x, y, 0, x, y, p.r);
-    g.addColorStop(0, `rgba(${p.color},${a})`);
-    g.addColorStop(1, `rgba(${p.color},0)`);
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(x, y, p.r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  if (!reducedMotion) requestAnimationFrame(frame);
-}
-
-resize();
-window.addEventListener("resize", resize);
-requestAnimationFrame(frame);
-
-/* Pointer parallax: moves lights and hotspots slightly */
+/* Pointer parallax and custom cursor */
 const stage = document.getElementById("stage");
+const cursor = document.querySelector(".cursor");
 window.addEventListener("pointermove", (e) => {
-  pointer.x = e.clientX / width - 0.5;
-  pointer.y = e.clientY / height - 0.5;
-  stage.style.setProperty("--mx", (pointer.x * 2).toFixed(3));
-  stage.style.setProperty("--my", (pointer.y * 2).toFixed(3));
-  if (reducedMotion) requestAnimationFrame(frame);
+  const x = e.clientX / window.innerWidth - 0.5;
+  const y = e.clientY / window.innerHeight - 0.5;
+  stage.style.setProperty("--mx", (x * 2).toFixed(3));
+  stage.style.setProperty("--my", (y * 2).toFixed(3));
+
+  if (e.pointerType !== "mouse") return;
+  cursor.classList.add("is-visible");
+  cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+  cursor.classList.toggle("is-hover", !!e.target.closest("button, a"));
 });
+document.addEventListener("pointerleave", () => cursor.classList.remove("is-visible"));
 
 /* ---------- Intro sequence ---------- */
 const intro = document.getElementById("intro");
 const timers = [];
 
 function playIntro() {
-  const steps = [[200, "1"], [3000, "2"], [6000, "3"]];
+  intro.dataset.scene = "1";
+
+  // "Brewing" counter from 0 to 100%
+  const count = intro.querySelector(".intro__count");
+  const duration = 2200;
+  const start = performance.now();
+  (function tick(now) {
+    const p = Math.min((now - start) / duration, 1);
+    count.textContent = Math.round((1 - Math.pow(1 - p, 3)) * 100);
+    if (p < 1 && intro.dataset.scene === "1") requestAnimationFrame(tick);
+  })(start);
+
+  const steps = [[2800, "2"], [5600, "3"]];
   steps.forEach(([delay, scene]) => timers.push(setTimeout(() => (intro.dataset.scene = scene), delay)));
 }
 
@@ -104,7 +42,7 @@ function enterStage() {
   timers.forEach(clearTimeout);
   intro.classList.add("is-leaving");
   body.classList.add("is-live");
-  setTimeout(() => (intro.hidden = true), reducedMotion ? 0 : 1000);
+  setTimeout(() => (intro.hidden = true), reducedMotion ? 0 : 1200);
   try { sessionStorage.setItem("introSeen", "1"); } catch (e) {}
 
   const tab = location.hash.slice(1);
@@ -217,7 +155,7 @@ arrowNav(roleList, (t) => selectRole(t, true), true);
 selectRole(roleTabs[0]);
 
 /* Logo returns to the stage */
-document.querySelector(".stage__logo").addEventListener("click", (e) => {
+document.querySelector(".stamp").addEventListener("click", (e) => {
   e.preventDefault();
   if (!panel.hidden) closePanel();
 });
