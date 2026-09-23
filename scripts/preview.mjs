@@ -15,6 +15,7 @@ rmSync(DIST, { recursive: true, force: true });
 mkdirSync(DIST, { recursive: true });
 cpSync(join(OUT, "_next"), join(DIST, "assets"), { recursive: true });
 cpSync(join(OUT, "icon.svg"), join(DIST, "icon.svg"));
+cpSync(join(OUT, "images"), join(DIST, "images"), { recursive: true });
 
 // Point every reference to the renamed asset folder (the Next.js runtime looks for "/_next/" too).
 (function rewrite(dir) {
@@ -23,7 +24,7 @@ cpSync(join(OUT, "icon.svg"), join(DIST, "icon.svg"));
     if (e.isDirectory()) rewrite(p);
     else if (/\.(js|css)$/.test(e.name)) {
       const src = readFileSync(p, "utf8");
-      writeFileSync(p, src.replaceAll("url(/_next/static/media/", "url(../media/").replaceAll("/_next/", "/assets/").replaceAll("\uFFFD", "\\uFFFD"));
+      writeFileSync(p, src.replaceAll("url(/_next/static/media/", "url(../media/").replaceAll("/_next/", "/assets/").replaceAll("/images/", "./images/").replaceAll("\uFFFD", "\\uFFFD"));
     }
   }
 })(join(DIST, "assets"));
@@ -42,7 +43,7 @@ const page =
   head +
   body;
 
-writeFileSync(join(DIST, "index.html"), page.replaceAll('"/_next/', '"./assets/').replaceAll('\\"/_next/', '\\"./assets/'));
+writeFileSync(join(DIST, "index.html"), page.replaceAll('"/images/', '"./images/').replaceAll('"/_next/', '"./assets/').replaceAll('\\"/_next/', '\\"./assets/'));
 
 const files = [];
 (function walk(dir) {
