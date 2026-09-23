@@ -2,68 +2,57 @@
 
 import { useId } from "react";
 
-// Original wallpaper in the spirit of a default macOS desktop: glossy silk ribbons over deep blue.
+// Original wallpaper in the spirit of a macOS landscape: soft pastel mountains and hills in morning mist.
 export function Wallpaper({ className = "" }: { className?: string }) {
   const id = useId().replace(/:/g, "");
   const u = (n: string) => `url(#${id}-${n})`;
+  const lg = (n: string, stops: [number, string][], x2 = 0, y2 = 1) => (
+    <linearGradient id={`${id}-${n}`} x1="0" y1="0" x2={x2} y2={y2}>
+      {stops.map(([o, c]) => <stop key={o} offset={o} stopColor={c} />)}
+    </linearGradient>
+  );
   return (
     <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" className={className} aria-hidden>
       <defs>
-        <linearGradient id={`${id}-bg`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#0a1a52" />
-          <stop offset=".55" stopColor="#172a86" />
-          <stop offset="1" stopColor="#35196f" />
-        </linearGradient>
-        <linearGradient id={`${id}-r1`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#2d6cff" />
-          <stop offset=".5" stopColor="#7a5cff" />
-          <stop offset="1" stopColor="#e24bb5" />
-        </linearGradient>
-        <linearGradient id={`${id}-r2`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#16a3ff" />
-          <stop offset=".55" stopColor="#3a58ff" />
-          <stop offset="1" stopColor="#8a3dff" />
-        </linearGradient>
-        <linearGradient id={`${id}-r3`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#ffa36e" />
-          <stop offset=".5" stopColor="#ff5fa2" />
-          <stop offset="1" stopColor="#a14dff" />
-        </linearGradient>
-        <linearGradient id={`${id}-shade`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#000" stopOpacity="0" />
-          <stop offset="1" stopColor="#000" stopOpacity=".28" />
-        </linearGradient>
-        <linearGradient id={`${id}-hl`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity=".6" />
-          <stop offset=".4" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-        <filter id={`${id}-glow`} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="60" />
+        {lg("sky", [[0, "#9fb7e4"], [0.35, "#c9cdea"], [0.62, "#f1d3d6"], [0.8, "#f8dcc6"], [1, "#fbe7d2"]])}
+        {lg("far", [[0, "#b6b3dc"], [1, "#d8cde2"]])}
+        {lg("mid", [[0, "#8e98cf"], [1, "#b9b3d6"]])}
+        {lg("hill1", [[0, "#9fbfa7"], [1, "#7fa592"]])}
+        {lg("hill2", [[0, "#6f9a86"], [1, "#517d6f"]])}
+        {lg("hill3", [[0, "#436e63"], [1, "#2e5250"]])}
+        <radialGradient id={`${id}-sun`} cx=".66" cy=".44" r=".3">
+          <stop offset="0" stopColor="#fff6e6" stopOpacity="1" />
+          <stop offset=".18" stopColor="#fff1dc" stopOpacity=".9" />
+          <stop offset="1" stopColor="#fff1dc" stopOpacity="0" />
+        </radialGradient>
+        <filter id={`${id}-mist`} x="-20%" y="-50%" width="140%" height="200%">
+          <feGaussianBlur stdDeviation="22" />
         </filter>
-        <filter id={`${id}-soft`}>
-          <feGaussianBlur stdDeviation="3" />
+        <filter id={`${id}-haze`}>
+          <feGaussianBlur stdDeviation="2.5" />
         </filter>
       </defs>
 
-      <rect width="1600" height="1000" fill={u("bg")} />
-      <ellipse cx="1260" cy="240" rx="440" ry="300" fill="#6a3cff" opacity=".5" filter={u("glow")} />
-      <ellipse cx="260" cy="820" rx="520" ry="280" fill="#0aa0ff" opacity=".35" filter={u("glow")} />
+      <rect width="1600" height="1000" fill={u("sky")} />
+      <rect width="1600" height="1000" fill={u("sun")} />
+      <circle cx="1056" cy="440" r="46" fill="#fffaf0" opacity=".9" />
 
-      <g filter={u("soft")}>
-        {/* back ribbon */}
-        <path d="M-100 700C200 520 520 820 860 640S1380 360 1700 480L1700 640C1380 520 1150 820 860 800S250 700 -100 880Z" fill={u("r2")} />
-        <path d="M-100 700C200 520 520 820 860 640S1380 360 1700 480L1700 640C1380 520 1150 820 860 800S250 700 -100 880Z" fill={u("shade")} />
-        {/* middle ribbon */}
-        <path d="M-100 520C260 300 600 600 900 440S1400 180 1700 300L1700 420C1400 320 1180 600 900 600S300 420 -100 660Z" fill={u("r1")} />
-        <path d="M-100 520C260 300 600 600 900 440S1400 180 1700 300L1700 420C1400 320 1180 600 900 600S300 420 -100 660Z" fill={u("shade")} />
-        {/* front ribbon */}
-        <path d="M-100 380C300 200 640 420 960 300S1420 120 1700 200L1700 262C1420 202 1200 420 960 420S320 300 -100 452Z" fill={u("r3")} opacity=".92" />
+      {/* distant mountains, softened by the air */}
+      <g filter={u("haze")}>
+        <path d="M0 560C60 520 110 470 150 468S220 510 260 512 340 430 385 424 470 490 520 494 600 440 645 438 720 510 765 512 860 430 905 428 1000 500 1045 502 1140 452 1185 450 1280 515 1325 516 1420 462 1465 460 1560 505 1600 512V1000H0Z" fill={u("far")} opacity=".85" />
+        <path d="M0 610C80 570 140 532 185 530S290 590 335 590 430 512 475 510 590 598 640 598 750 542 800 540 910 608 960 608 1070 548 1120 546 1230 598 1280 598 1390 542 1440 540 1560 576 1600 582V1000H0Z" fill={u("mid")} opacity=".9" />
       </g>
+      <ellipse cx="800" cy="610" rx="900" ry="46" fill="#fff" opacity=".55" filter={u("mist")} />
 
-      {/* glossy highlights along the top edges */}
-      <path d="M-100 520C260 300 600 600 900 440S1400 180 1700 300L1700 340C1400 230 1180 500 900 500S300 360 -100 580Z" fill={u("hl")} />
-      <path d="M-100 700C200 520 520 820 860 640S1380 360 1700 480L1700 520C1380 420 1150 720 860 700S250 610 -100 760Z" fill={u("hl")} opacity=".7" />
-      <path d="M-100 380C300 200 640 420 960 300S1420 120 1700 200" fill="none" stroke="#fff" strokeOpacity=".45" strokeWidth="2" />
+      {/* rolling hills */}
+      <path d="M0 690C200 630 380 640 560 680S920 720 1120 670 1450 620 1600 650V1000H0Z" fill={u("hill1")} />
+      <ellipse cx="700" cy="700" rx="900" ry="40" fill="#fff" opacity=".35" filter={u("mist")} />
+      <path d="M0 780C240 720 470 740 700 780S1120 820 1340 770 1520 740 1600 750V1000H0Z" fill={u("hill2")} />
+      <path d="M0 880C300 830 600 850 880 880S1380 900 1600 860V1000H0Z" fill={u("hill3")} />
+
+      {/* light catching the ridges */}
+      <path d="M0 690C200 630 380 640 560 680S920 720 1120 670 1450 620 1600 650" fill="none" stroke="#fff4e0" strokeOpacity=".45" strokeWidth="2" />
+      <path d="M0 780C240 720 470 740 700 780S1120 820 1340 770 1520 740 1600 750" fill="none" stroke="#fff4e0" strokeOpacity=".25" strokeWidth="2" />
     </svg>
   );
 }

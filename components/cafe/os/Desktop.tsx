@@ -305,7 +305,7 @@ function DesktopIcons({ compact, height, bounds, onOpenFolder }: { compact: bool
           title={d.label}
         >
           <span className="grid h-14 w-14 place-items-center rounded-lg transition-colors group-hover:bg-white/15 group-focus-visible:bg-white/25">{d.icon}</span>
-          <span className="line-clamp-2 break-words rounded px-1 text-[11px] leading-tight [text-shadow:0_1px_2px_rgba(0,0,0,.7)] group-focus-visible:bg-[#1a73e8]">{d.label.replace(/_/g, "_\u200b")}</span>
+          <span className="line-clamp-2 break-words rounded px-1 text-[11px] font-medium leading-tight [text-shadow:0_1px_3px_rgba(20,25,50,.95),0_0_10px_rgba(20,25,50,.6)] group-focus-visible:bg-[#1a73e8]">{d.label.replace(/_/g, "_\u200b")}</span>
         </motion.button>
       ))}
     </div>
