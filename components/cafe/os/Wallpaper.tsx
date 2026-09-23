@@ -1,43 +1,69 @@
-// Original wallpaper in the spirit of a default macOS desktop: soft layered waves of colour.
+"use client";
+
+import { useId } from "react";
+
+// Original wallpaper in the spirit of a default macOS desktop: glossy silk ribbons over deep blue.
 export function Wallpaper({ className = "" }: { className?: string }) {
+  const id = useId().replace(/:/g, "");
+  const u = (n: string) => `url(#${id}-${n})`;
   return (
     <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" className={className} aria-hidden>
       <defs>
-        <linearGradient id="wp-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#1d2b78" />
-          <stop offset=".45" stopColor="#5b4db8" />
-          <stop offset=".8" stopColor="#e38c86" />
-          <stop offset="1" stopColor="#f6c490" />
+        <linearGradient id={`${id}-bg`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#0a1a52" />
+          <stop offset=".55" stopColor="#172a86" />
+          <stop offset="1" stopColor="#35196f" />
         </linearGradient>
-        <linearGradient id="wp-w1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f3a58c" />
-          <stop offset="1" stopColor="#c85f86" />
+        <linearGradient id={`${id}-r1`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#2d6cff" />
+          <stop offset=".5" stopColor="#7a5cff" />
+          <stop offset="1" stopColor="#e24bb5" />
         </linearGradient>
-        <linearGradient id="wp-w2" x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#8a6be0" />
-          <stop offset="1" stopColor="#4b3ba8" />
+        <linearGradient id={`${id}-r2`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#16a3ff" />
+          <stop offset=".55" stopColor="#3a58ff" />
+          <stop offset="1" stopColor="#8a3dff" />
         </linearGradient>
-        <linearGradient id="wp-w3" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3651c9" />
-          <stop offset="1" stopColor="#23308a" />
+        <linearGradient id={`${id}-r3`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#ffa36e" />
+          <stop offset=".5" stopColor="#ff5fa2" />
+          <stop offset="1" stopColor="#a14dff" />
         </linearGradient>
-        <linearGradient id="wp-w4" x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#1a2466" />
-          <stop offset="1" stopColor="#0e1238" />
+        <linearGradient id={`${id}-shade`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#000" stopOpacity="0" />
+          <stop offset="1" stopColor="#000" stopOpacity=".28" />
         </linearGradient>
-        <radialGradient id="wp-glow" cx=".72" cy=".38" r=".5">
-          <stop offset="0" stopColor="#ffd9b0" stopOpacity=".55" />
-          <stop offset="1" stopColor="#ffd9b0" stopOpacity="0" />
-        </radialGradient>
+        <linearGradient id={`${id}-hl`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity=".6" />
+          <stop offset=".4" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+        <filter id={`${id}-glow`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="60" />
+        </filter>
+        <filter id={`${id}-soft`}>
+          <feGaussianBlur stdDeviation="3" />
+        </filter>
       </defs>
-      <rect width="1600" height="1000" fill="url(#wp-sky)" />
-      <rect width="1600" height="1000" fill="url(#wp-glow)" />
-      <path d="M0 520C260 430 470 470 700 540S1180 640 1600 470V1000H0Z" fill="url(#wp-w1)" />
-      <path d="M0 620C300 540 560 600 820 660S1260 700 1600 590V1000H0Z" fill="url(#wp-w2)" />
-      <path d="M0 730C280 670 600 720 880 780S1340 800 1600 720V1000H0Z" fill="url(#wp-w3)" />
-      <path d="M0 850C330 800 640 840 940 880S1380 900 1600 850V1000H0Z" fill="url(#wp-w4)" />
-      <path d="M0 520C260 430 470 470 700 540S1180 640 1600 470" fill="none" stroke="#fff" strokeOpacity=".18" strokeWidth="3" />
-      <path d="M0 620C300 540 560 600 820 660S1260 700 1600 590" fill="none" stroke="#fff" strokeOpacity=".12" strokeWidth="3" />
+
+      <rect width="1600" height="1000" fill={u("bg")} />
+      <ellipse cx="1260" cy="240" rx="440" ry="300" fill="#6a3cff" opacity=".5" filter={u("glow")} />
+      <ellipse cx="260" cy="820" rx="520" ry="280" fill="#0aa0ff" opacity=".35" filter={u("glow")} />
+
+      <g filter={u("soft")}>
+        {/* back ribbon */}
+        <path d="M-100 700C200 520 520 820 860 640S1380 360 1700 480L1700 640C1380 520 1150 820 860 800S250 700 -100 880Z" fill={u("r2")} />
+        <path d="M-100 700C200 520 520 820 860 640S1380 360 1700 480L1700 640C1380 520 1150 820 860 800S250 700 -100 880Z" fill={u("shade")} />
+        {/* middle ribbon */}
+        <path d="M-100 520C260 300 600 600 900 440S1400 180 1700 300L1700 420C1400 320 1180 600 900 600S300 420 -100 660Z" fill={u("r1")} />
+        <path d="M-100 520C260 300 600 600 900 440S1400 180 1700 300L1700 420C1400 320 1180 600 900 600S300 420 -100 660Z" fill={u("shade")} />
+        {/* front ribbon */}
+        <path d="M-100 380C300 200 640 420 960 300S1420 120 1700 200L1700 262C1420 202 1200 420 960 420S320 300 -100 452Z" fill={u("r3")} opacity=".92" />
+      </g>
+
+      {/* glossy highlights along the top edges */}
+      <path d="M-100 520C260 300 600 600 900 440S1400 180 1700 300L1700 340C1400 230 1180 500 900 500S300 360 -100 580Z" fill={u("hl")} />
+      <path d="M-100 700C200 520 520 820 860 640S1380 360 1700 480L1700 520C1380 420 1150 720 860 700S250 610 -100 760Z" fill={u("hl")} opacity=".7" />
+      <path d="M-100 380C300 200 640 420 960 300S1420 120 1700 200" fill="none" stroke="#fff" strokeOpacity=".45" strokeWidth="2" />
     </svg>
   );
 }
