@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Illana Nemard — Event Manager</title>
   <meta name="description" content="Illana Nemard — Event Manager and Event &amp; Communications Specialist based in Melbourne, Australia, with 5+ years of French corporate event and communications experience.">
+  <meta name="theme-color" content="#0b0e1a">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -12,359 +13,388 @@
 </head>
 <body>
 
-  <header class="nav" id="top">
-    <div class="container nav__inner">
-      <a href="#top" class="nav__logo">Illana Nemard</a>
-      <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span>
-      </button>
-      <nav class="nav__links">
-        <a href="#about">About</a>
-        <a href="#services">Expertise</a>
-        <a href="#experience">Experience</a>
-        <a href="#events">Events</a>
-        <a href="#contact" class="btn btn--small">Contact</a>
-      </nav>
+  <!-- Animated background: event lights, drawn by script.js -->
+  <canvas class="lights" aria-hidden="true"></canvas>
+
+  <!-- INTRO: cinematic opening sequence -->
+  <div class="intro" id="intro">
+    <div class="intro__scene intro__scene--1">
+      <p class="intro__line"><span>Every great event</span></p>
+      <p class="intro__line intro__line--accent"><span>starts with a story.</span></p>
     </div>
-  </header>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero">
-      <div class="container hero__inner">
-        <p class="eyebrow">Based in Melbourne, Australia · French expertise</p>
-        <h1>Event Manager<br><em>&amp; Communications Specialist</em></h1>
-        <p class="hero__lead">
-          I plan and deliver corporate events, conferences, product launches and brand activations
-          from concept to execution — and the communications that fill the room.
-          French corporate experience, Australian hospitality know-how.
-        </p>
-        <div class="hero__cta">
-          <a href="#contact" class="btn">Let's work together</a>
-          <a href="#experience" class="btn btn--ghost">View experience</a>
-        </div>
-        <ul class="hero__stats">
-          <li><strong>5+</strong><span>years in events &amp; communications</span></li>
-          <li><strong>10+</strong><span>corporate events led at LexisNexis France</span></li>
-          <li><strong>2</strong><span>countries · FR &amp; AU</span></li>
-        </ul>
+    <div class="intro__scene intro__scene--2">
+      <div class="route">
+        <span class="route__city">Paris · Lyon · Strasbourg</span>
+        <svg class="route__path" viewBox="0 0 400 80" aria-hidden="true">
+          <path d="M10 60 Q200 -30 390 60" />
+        </svg>
+        <span class="route__city route__city--end">Melbourne</span>
       </div>
-    </section>
+      <p class="intro__caption">French expertise. Australian stage.</p>
+    </div>
 
-    <!-- ABOUT -->
-    <section class="section" id="about">
-      <div class="container about">
-        <div class="about__photo">
-          <!-- Replace with <img src="images/portrait.jpg" alt="Illana Nemard"> -->
-          <div class="photo-placeholder">IN</div>
+    <div class="intro__scene intro__scene--3">
+      <p class="eyebrow">Event Manager · Event &amp; Communications Specialist</p>
+      <p class="intro__name">Illana Nemard</p>
+      <button class="btn intro__enter" type="button">Enter the experience</button>
+    </div>
+
+    <button class="intro__skip" type="button">Skip intro</button>
+  </div>
+
+  <!-- STAGE: interactive scene -->
+  <main class="stage" id="stage">
+    <header class="stage__top">
+      <a href="#" class="stage__logo" aria-label="Illana Nemard, home">IN</a>
+      <p class="stage__chip"><span class="live-dot"></span>Melbourne, Australia · French expertise</p>
+      <button class="stage__contact" type="button" data-open="contact">Contact</button>
+    </header>
+
+    <div class="stage__center">
+      <p class="eyebrow">Event Manager &amp; Communications Specialist</p>
+      <h1>Illana <em>Nemard</em></h1>
+      <p class="stage__lead">Corporate events, conferences, product launches and brand activations, from concept to execution.</p>
+      <ul class="stats">
+        <li><strong>5+</strong><span>years</span></li>
+        <li><strong>10+</strong><span>corporate events at LexisNexis</span></li>
+        <li><strong>FR · AU</strong><span>two countries</span></li>
+      </ul>
+      <p class="stage__hint">Tap an element to explore</p>
+    </div>
+
+    <nav class="hotspots" aria-label="Sections">
+      <button class="hotspot" type="button" data-open="about" style="--x: 15%; --y: 27%; --d: 0s">
+        <span class="hotspot__ring" aria-hidden="true"></span>
+        <span class="hotspot__num">01</span>
+        <span class="hotspot__label">About</span>
+        <span class="hotspot__sub">From France to Melbourne</span>
+      </button>
+      <button class="hotspot" type="button" data-open="expertise" style="--x: 85%; --y: 25%; --d: .4s">
+        <span class="hotspot__ring" aria-hidden="true"></span>
+        <span class="hotspot__num">02</span>
+        <span class="hotspot__label">Expertise</span>
+        <span class="hotspot__sub">What I bring to your event</span>
+      </button>
+      <button class="hotspot" type="button" data-open="experience" style="--x: 11%; --y: 66%; --d: .8s">
+        <span class="hotspot__ring" aria-hidden="true"></span>
+        <span class="hotspot__num">03</span>
+        <span class="hotspot__label">Experience</span>
+        <span class="hotspot__sub">8 roles · FR &amp; AU</span>
+      </button>
+      <button class="hotspot" type="button" data-open="events" style="--x: 89%; --y: 64%; --d: 1.2s">
+        <span class="hotspot__ring" aria-hidden="true"></span>
+        <span class="hotspot__num">04</span>
+        <span class="hotspot__label">Events</span>
+        <span class="hotspot__sub">Highlights</span>
+      </button>
+      <button class="hotspot" type="button" data-open="skills" style="--x: 30%; --y: 88%; --d: 1.6s">
+        <span class="hotspot__ring" aria-hidden="true"></span>
+        <span class="hotspot__num">05</span>
+        <span class="hotspot__label">Skills</span>
+        <span class="hotspot__sub">Toolkit &amp; languages</span>
+      </button>
+      <button class="hotspot" type="button" data-open="contact" style="--x: 70%; --y: 88%; --d: 2s">
+        <span class="hotspot__ring" aria-hidden="true"></span>
+        <span class="hotspot__num">06</span>
+        <span class="hotspot__label">Contact</span>
+        <span class="hotspot__sub">Let's talk</span>
+      </button>
+    </nav>
+  </main>
+
+  <!-- PANEL: opens when an element is touched; each section is a tab -->
+  <div class="panel" id="panel" hidden>
+    <div class="panel__backdrop" data-close></div>
+    <div class="panel__sheet" role="dialog" aria-modal="true" aria-label="Illana Nemard portfolio">
+      <div class="panel__head">
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button role="tab" id="tab-about" aria-controls="about" data-tab="about">About</button>
+          <button role="tab" id="tab-expertise" aria-controls="expertise" data-tab="expertise">Expertise</button>
+          <button role="tab" id="tab-experience" aria-controls="experience" data-tab="experience">Experience</button>
+          <button role="tab" id="tab-events" aria-controls="events" data-tab="events">Events</button>
+          <button role="tab" id="tab-skills" aria-controls="skills" data-tab="skills">Skills</button>
+          <button role="tab" id="tab-contact" aria-controls="contact" data-tab="contact">Contact</button>
         </div>
-        <div class="about__text">
-          <p class="eyebrow">About me</p>
+        <button class="panel__close" type="button" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+
+      <div class="panel__body">
+
+        <!-- ABOUT -->
+        <section class="tabpanel" role="tabpanel" id="about" aria-labelledby="tab-about" hidden>
+          <p class="eyebrow">01 · About me</p>
           <h2>From France to Melbourne: <em>events with a French touch</em></h2>
-          <p>
-            I'm a French Event Manager and Communications Specialist with 5+ years of experience across
-            event management, corporate communications, social media, content creation and brand activation.
-            I hold a Master's degree in Communication, Advertising &amp; Digital Strategy (INSEEC).
-          </p>
-          <p>
-            At LexisNexis France, I led the end-to-end delivery of corporate events, conferences and product
-            launches — managing logistics, budgets, suppliers and on-site coordination, and running the
-            multi-channel campaigns that drove attendance.
-          </p>
-          <p>
-            Now based in Melbourne, I combine that corporate event background with hands-on Australian
-            hospitality experience, with a strong focus on guest experience, operational efficiency and
-            high-quality delivery.
-          </p>
+          <div class="about">
+            <div class="portrait" aria-hidden="true">IN</div>
+            <div>
+              <p>I'm a French Event Manager and Communications Specialist with 5+ years of experience across event management, corporate communications, social media, content creation and brand activation. I hold a Master's degree in Communication, Advertising &amp; Digital Strategy (INSEEC).</p>
+              <p>At LexisNexis France, I led the end-to-end delivery of corporate events, conferences and product launches — managing logistics, budgets, suppliers and on-site coordination, and running the multi-channel campaigns that drove attendance.</p>
+              <p>Now based in Melbourne, I combine that corporate event background with hands-on Australian hospitality experience, with a strong focus on guest experience, operational efficiency and high-quality delivery.</p>
+            </div>
+          </div>
           <ul class="tags">
             <li>French — Native</li>
             <li>English — Fluent (C1)</li>
             <li>Spanish — Conversational (A2–B1)</li>
-            <li>Working Holiday Visa (417) · open to sponsorship</li>
+            <li>Working Holiday Visa (417)</li>
+            <li>Open to sponsorship</li>
           </ul>
-        </div>
-      </div>
-    </section>
+        </section>
 
-    <!-- SERVICES -->
-    <section class="section section--alt" id="services">
-      <div class="container">
-        <p class="eyebrow">Expertise</p>
-        <h2>What I bring to your event</h2>
-        <div class="cards">
-          <article class="card">
-            <span class="card__num">01</span>
-            <h3>Event Management</h3>
-            <p>End-to-end planning and execution of corporate events, conferences, product launches and brand activations: logistics, budgets, timelines and on-site operations.</p>
-          </article>
-          <article class="card">
-            <span class="card__num">02</span>
-            <h3>Event Communications</h3>
-            <p>Event promotion and communication strategies, social media campaigns, email marketing and storytelling that build visibility and attendance.</p>
-          </article>
-          <article class="card">
-            <span class="card__num">03</span>
-            <h3>Project &amp; Stakeholder Management</h3>
-            <p>Cross-functional collaboration with Marketing, Sales and Product teams, supplier coordination and client relationships, on time and on brief.</p>
-          </article>
-          <article class="card">
-            <span class="card__num">04</span>
-            <h3>Digital &amp; Creative</h3>
-            <p>Social media strategy and content creation with Canva, Meta Business Suite, Hootsuite, Adobe Creative Suite, WordPress and HTML/CSS.</p>
-          </article>
-          <article class="card">
-            <span class="card__num">05</span>
-            <h3>Guest Experience</h3>
-            <p>High-volume Australian hospitality experience: guest engagement, complaint resolution and RSA-compliant service, calm under pressure.</p>
-          </article>
-          <article class="card">
-            <span class="card__num">06</span>
-            <h3>French Expertise, Australian Base</h3>
-            <p>Bilingual English–French professional bringing French corporate event standards to Melbourne — an asset for international and French-speaking audiences.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- EXPERIENCE -->
-    <section class="section" id="experience">
-      <div class="container">
-        <p class="eyebrow">Career</p>
-        <h2>Professional experience</h2>
-        <ol class="timeline">
-          <li class="timeline__item">
-            <div class="timeline__meta">
-              <span class="timeline__date">2025 — Present</span>
-              <span class="timeline__place">Queensland &amp; Victoria, Australia</span>
-            </div>
-            <div class="timeline__body">
-              <h3>Bartender / All Rounder</h3>
-              <p class="timeline__company">Australian Hospitality Venues</p>
-              <ul>
-                <li>Delivered high-volume bar and hospitality service in fast-paced venues</li>
-                <li>Managed guest interactions with a strong focus on customer experience and service standards</li>
-                <li>Supported stock management, venue preparation, POS and floor operations</li>
-                <li>Gained practical experience in Australian hospitality and guest-facing event environments</li>
-              </ul>
-            </div>
-          </li>
-          <li class="timeline__item">
-            <div class="timeline__meta">
-              <span class="timeline__date">02/2024 — 10/2024</span>
-              <span class="timeline__place">Paris, France</span>
-            </div>
-            <div class="timeline__body">
-              <h3>External Communications &amp; Events Manager</h3>
-              <p class="timeline__company">LexisNexis France</p>
-              <ul>
-                <li>Led the end-to-end planning and delivery of 10+ corporate events, conferences and product launches for legal and accounting audiences</li>
-                <li>Managed event logistics, budgets, timelines, suppliers and on-site coordination</li>
-                <li>Developed and executed multi-channel event campaigns across social media, email and digital content</li>
-                <li>Collaborated with Marketing, Sales and Product teams to align event strategy with business objectives</li>
-                <li>Supported team onboarding and improved processes across event and communication projects</li>
-              </ul>
-            </div>
-          </li>
-          <li class="timeline__item">
-            <div class="timeline__meta">
-              <span class="timeline__date">09/2023 — 11/2023</span>
-              <span class="timeline__place">Lyon, France</span>
-            </div>
-            <div class="timeline__body">
-              <h3>Digital Communications Assistant</h3>
-              <p class="timeline__company">Pimms Mediation</p>
-              <ul>
-                <li>Developed and optimised digital communication materials to strengthen brand visibility</li>
-                <li>Managed email marketing campaigns and social media content</li>
-              </ul>
-            </div>
-          </li>
-          <li class="timeline__item">
-            <div class="timeline__meta">
-              <span class="timeline__date">09/2022 — 08/2023</span>
-              <span class="timeline__place">Lyon, France</span>
-            </div>
-            <div class="timeline__body">
-              <h3>360° Communication Assistant</h3>
-              <p class="timeline__company">Pulsalys</p>
-              <ul>
-                <li>Coordinated internal and external events, ensuring smooth execution and consistent brand messaging</li>
-                <li>Developed content strategies across social media and digital platforms</li>
-                <li>Produced newsletters, articles and website content supporting communication campaigns</li>
-              </ul>
-            </div>
-          </li>
-          <li class="timeline__item">
-            <div class="timeline__meta">
-              <span class="timeline__date">10/2021 — 06/2022</span>
-              <span class="timeline__place">Strasbourg, France</span>
-            </div>
-            <div class="timeline__body">
-              <h3>Digital Communications Manager</h3>
-              <p class="timeline__company">L'atelier du Relieur</p>
-              <ul>
-                <li>Managed the organisation's digital presence across website and social media</li>
-                <li>Created visual and editorial content and targeted digital campaigns</li>
-                <li>Maintained and optimised the WordPress website</li>
-              </ul>
-            </div>
-          </li>
-          <li class="timeline__item">
-            <div class="timeline__meta">
-              <span class="timeline__date">10/2020 — 07/2021</span>
-              <span class="timeline__place">Strasbourg, France</span>
-            </div>
-            <div class="timeline__body">
-              <h3>Communication &amp; Sales Assistant</h3>
-              <p class="timeline__company">Ocordo Travaux</p>
-              <ul>
-                <li>Managed client and business partner communications</li>
-                <li>Supported local marketing and advertising campaigns and business development</li>
-              </ul>
-            </div>
-          </li>
-          <li class="timeline__item">
-            <div class="timeline__meta">
-              <span class="timeline__date">03/2020 — 04/2020</span>
-              <span class="timeline__place">Hoerdt, France</span>
-            </div>
-            <div class="timeline__body">
-              <h3>Marketing Assistant</h3>
-              <p class="timeline__company">Spiero</p>
-              <ul>
-                <li>Supported digital and print marketing campaigns, social media content and market research</li>
-              </ul>
-            </div>
-          </li>
-          <li class="timeline__item">
-            <div class="timeline__meta">
-              <span class="timeline__date">02/2020</span>
-              <span class="timeline__place">Hoenheim, France</span>
-            </div>
-            <div class="timeline__body">
-              <h3>Event Assistant</h3>
-              <p class="timeline__company">Strass Events</p>
-              <ul>
-                <li>Supported coordination and logistics of corporate and promotional events</li>
-                <li>Liaised with vendors and supported guest check-in and on-site operations</li>
-              </ul>
-            </div>
-          </li>
-        </ol>
-
-        <div class="edu">
-          <h3>Education</h3>
-          <ul>
-            <li><strong>Master, Communication, Advertising &amp; Digital Strategy</strong> — INSEEC, Lyon <span>2022 — 2024</span></li>
-            <li><strong>Bachelor, Multimedia Communications Manager</strong> — ESTUDIA, Strasbourg <span>2021 — 2022</span></li>
-            <li><strong>Diploma of Communications</strong> — IESA, Strasbourg <span>2020 — 2021</span></li>
-            <li><strong>Baccalauréat, Technology, Information Systems &amp; Digital</strong> — ORT, Strasbourg <span>2016 — 2018</span></li>
-          </ul>
-          <h3 class="edu__sub">Certificates</h3>
-          <ul>
-            <li><strong>RSA</strong> — Responsible Service of Alcohol <span>Australia</span></li>
-            <li><strong>Food Handling Certificate</strong> <span>Australia</span></li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- EVENTS -->
-    <section class="section section--dark" id="events">
-      <div class="container">
-        <p class="eyebrow">Portfolio</p>
-        <h2>Event highlights</h2>
-        <div class="events">
-          <article class="event">
-            <div class="event__img"></div>
-            <div class="event__body">
-              <p class="event__type">Corporate events · 2024</p>
-              <h3>LexisNexis France event programme</h3>
-              <p>Conferences, corporate events and product launches for legal and accounting professionals — from concept, budget and suppliers to on-site delivery and promotion.</p>
-              <p class="event__figures">10+ events · Paris</p>
-            </div>
-          </article>
-          <article class="event">
-            <div class="event__img"></div>
-            <div class="event__body">
-              <p class="event__type">Internal &amp; external events · 2022–23</p>
-              <h3>Pulsalys</h3>
-              <p>Coordinated internal and external events for a Lyon innovation organisation, paired with content, newsletters and social campaigns.</p>
-              <p class="event__figures">Events + 360° comms · Lyon</p>
-            </div>
-          </article>
-          <article class="event">
-            <div class="event__img"></div>
-            <div class="event__body">
-              <p class="event__type">Hospitality · 2025–now</p>
-              <h3>Australian venues</h3>
-              <p>High-volume guest-facing service in Queensland and Victoria venues — the operational side of great guest experiences.</p>
-              <p class="event__figures">QLD &amp; VIC · Australia</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- SKILLS -->
-    <section class="section" id="skills">
-      <div class="container skills">
-        <div>
-          <p class="eyebrow">Toolkit</p>
-          <h2>Skills &amp; tools</h2>
-        </div>
-        <div class="skills__cols">
-          <div>
-            <h3>Core skills</h3>
-            <ul class="tags">
-              <li>Event planning &amp; execution</li>
-              <li>Event logistics</li>
-              <li>Budgets &amp; timelines</li>
-              <li>Vendor management</li>
-              <li>Stakeholder coordination</li>
-              <li>On-site operations</li>
-              <li>Social media campaigns</li>
-              <li>Email marketing</li>
-              <li>Storytelling &amp; content</li>
-            </ul>
+        <!-- EXPERTISE -->
+        <section class="tabpanel" role="tabpanel" id="expertise" aria-labelledby="tab-expertise" hidden>
+          <p class="eyebrow">02 · Expertise</p>
+          <h2>What I bring <em>to your event</em></h2>
+          <div class="cards">
+            <article class="card">
+              <span class="card__num">01</span>
+              <h3>Event Management</h3>
+              <p>End-to-end planning and execution of corporate events, conferences, product launches and brand activations: logistics, budgets, timelines and on-site operations.</p>
+            </article>
+            <article class="card">
+              <span class="card__num">02</span>
+              <h3>Event Communications</h3>
+              <p>Event promotion and communication strategies, social media campaigns, email marketing and storytelling that build visibility and attendance.</p>
+            </article>
+            <article class="card">
+              <span class="card__num">03</span>
+              <h3>Project &amp; Stakeholder Management</h3>
+              <p>Cross-functional collaboration with Marketing, Sales and Product teams, supplier coordination and client relationships, on time and on brief.</p>
+            </article>
+            <article class="card">
+              <span class="card__num">04</span>
+              <h3>Digital &amp; Creative</h3>
+              <p>Social media strategy and content creation with Canva, Meta Business Suite, Hootsuite, Adobe Creative Suite, WordPress and HTML/CSS.</p>
+            </article>
+            <article class="card">
+              <span class="card__num">05</span>
+              <h3>Guest Experience</h3>
+              <p>High-volume Australian hospitality experience: guest engagement, complaint resolution and RSA-compliant service, calm under pressure.</p>
+            </article>
+            <article class="card">
+              <span class="card__num">06</span>
+              <h3>French Expertise, Australian Base</h3>
+              <p>Bilingual English–French professional bringing French corporate event standards to Melbourne — an asset for international and French-speaking audiences.</p>
+            </article>
           </div>
-          <div>
-            <h3>Tools</h3>
-            <ul class="tags">
-              <li>Canva</li>
-              <li>Meta Business Suite</li>
-              <li>Hootsuite</li>
-              <li>Adobe Photoshop</li>
-              <li>Illustrator</li>
-              <li>InDesign</li>
-              <li>Premiere Pro</li>
-              <li>WordPress</li>
-              <li>HTML/CSS</li>
-            </ul>
+        </section>
+
+        <!-- EXPERIENCE: nested tabs, one per role -->
+        <section class="tabpanel" role="tabpanel" id="experience" aria-labelledby="tab-experience" hidden>
+          <p class="eyebrow">03 · Career</p>
+          <h2>Professional <em>experience</em></h2>
+          <div class="roles">
+            <div class="roles__list" role="tablist" aria-label="Roles" aria-orientation="vertical">
+              <button role="tab" id="role-tab-1" aria-controls="role-1"><span>2025 — Present</span>Bartender / All Rounder</button>
+              <button role="tab" id="role-tab-2" aria-controls="role-2"><span>2024</span>External Communications &amp; Events Manager</button>
+              <button role="tab" id="role-tab-3" aria-controls="role-3"><span>2023</span>Digital Communications Assistant</button>
+              <button role="tab" id="role-tab-4" aria-controls="role-4"><span>2022 — 2023</span>360° Communication Assistant</button>
+              <button role="tab" id="role-tab-5" aria-controls="role-5"><span>2021 — 2022</span>Digital Communications Manager</button>
+              <button role="tab" id="role-tab-6" aria-controls="role-6"><span>2020 — 2021</span>Communication &amp; Sales Assistant</button>
+              <button role="tab" id="role-tab-7" aria-controls="role-7"><span>2020</span>Marketing Assistant</button>
+              <button role="tab" id="role-tab-8" aria-controls="role-8"><span>2020</span>Event Assistant</button>
+              <button role="tab" id="role-tab-9" aria-controls="role-9"><span>2016 — 2024</span>Education &amp; certificates</button>
+            </div>
+
+            <div class="roles__detail">
+              <article class="role" role="tabpanel" id="role-1" aria-labelledby="role-tab-1">
+                <p class="role__meta">2025 — Present · Queensland &amp; Victoria, Australia</p>
+                <h3>Bartender / All Rounder</h3>
+                <p class="role__company">Australian Hospitality Venues</p>
+                <ul>
+                  <li>Delivered high-volume bar and hospitality service in fast-paced venues</li>
+                  <li>Managed guest interactions with a strong focus on customer experience and service standards</li>
+                  <li>Prepared cocktails and beverages, and supported food and floor operations</li>
+                  <li>Handled POS transactions, stock management and venue preparation</li>
+                  <li>Gained practical experience in Australian hospitality and guest-facing event environments</li>
+                </ul>
+              </article>
+              <article class="role" role="tabpanel" id="role-2" aria-labelledby="role-tab-2" hidden>
+                <p class="role__meta">02/2024 — 10/2024 · Paris, France</p>
+                <h3>External Communications &amp; Events Manager</h3>
+                <p class="role__company">LexisNexis France</p>
+                <ul>
+                  <li>Led the end-to-end planning and delivery of 10+ corporate events, conferences and product launches for legal and accounting audiences</li>
+                  <li>Managed event logistics, budgets, timelines, suppliers and on-site coordination</li>
+                  <li>Developed and executed multi-channel event campaigns across social media, email and digital content</li>
+                  <li>Created event content and promotional materials to increase visibility, engagement and attendance</li>
+                  <li>Collaborated with Marketing, Sales and Product teams to align event strategy with business objectives</li>
+                  <li>Supported team onboarding and improved processes across event and communication projects</li>
+                </ul>
+              </article>
+              <article class="role" role="tabpanel" id="role-3" aria-labelledby="role-tab-3" hidden>
+                <p class="role__meta">09/2023 — 11/2023 · Lyon, France</p>
+                <h3>Digital Communications Assistant</h3>
+                <p class="role__company">Pimms Mediation</p>
+                <ul>
+                  <li>Developed and optimised digital communication materials to strengthen brand visibility and engagement</li>
+                  <li>Managed email marketing campaigns and social media content</li>
+                  <li>Ensured consistent brand messaging across digital channels</li>
+                </ul>
+              </article>
+              <article class="role" role="tabpanel" id="role-4" aria-labelledby="role-tab-4" hidden>
+                <p class="role__meta">09/2022 — 08/2023 · Lyon, France</p>
+                <h3>360° Communication Assistant</h3>
+                <p class="role__company">Pulsalys</p>
+                <ul>
+                  <li>Coordinated internal and external events, ensuring smooth execution and consistent brand messaging</li>
+                  <li>Developed and implemented content strategies across social media and digital platforms</li>
+                  <li>Produced newsletters, articles and website content supporting communication campaigns</li>
+                  <li>Assisted with project management across multiple departments</li>
+                </ul>
+              </article>
+              <article class="role" role="tabpanel" id="role-5" aria-labelledby="role-tab-5" hidden>
+                <p class="role__meta">10/2021 — 06/2022 · Strasbourg, France</p>
+                <h3>Digital Communications Manager</h3>
+                <p class="role__company">L'atelier du Relieur</p>
+                <ul>
+                  <li>Managed the organisation's digital presence across website and social media</li>
+                  <li>Created visual and editorial content aligned with brand identity</li>
+                  <li>Developed targeted digital campaigns to improve customer engagement</li>
+                  <li>Maintained and optimised the WordPress website</li>
+                </ul>
+              </article>
+              <article class="role" role="tabpanel" id="role-6" aria-labelledby="role-tab-6" hidden>
+                <p class="role__meta">10/2020 — 07/2021 · Strasbourg, France</p>
+                <h3>Communication &amp; Sales Assistant</h3>
+                <p class="role__company">Ocordo Travaux</p>
+                <ul>
+                  <li>Managed client relationships and business partner communications</li>
+                  <li>Supported local marketing and advertising campaigns</li>
+                  <li>Conducted field prospecting to support business development</li>
+                </ul>
+              </article>
+              <article class="role" role="tabpanel" id="role-7" aria-labelledby="role-tab-7" hidden>
+                <p class="role__meta">03/2020 — 04/2020 · Hoerdt, France</p>
+                <h3>Marketing Assistant</h3>
+                <p class="role__company">Spiero</p>
+                <ul>
+                  <li>Supported marketing campaigns across digital and print channels</li>
+                  <li>Created content for social media, newsletters and promotional materials</li>
+                  <li>Conducted market research and competitor analysis</li>
+                </ul>
+              </article>
+              <article class="role" role="tabpanel" id="role-8" aria-labelledby="role-tab-8" hidden>
+                <p class="role__meta">02/2020 · Hoenheim, France</p>
+                <h3>Event Assistant</h3>
+                <p class="role__company">Strass Events</p>
+                <ul>
+                  <li>Supported the coordination and logistics of corporate and promotional events</li>
+                  <li>Assisted with event setup and breakdown</li>
+                  <li>Liaised with vendors and supported guest check-in and on-site operations</li>
+                </ul>
+              </article>
+              <article class="role" role="tabpanel" id="role-9" aria-labelledby="role-tab-9" hidden>
+                <p class="role__meta">Education</p>
+                <ul class="edu">
+                  <li><strong>Master, Communication, Advertising &amp; Digital Strategy</strong><span>INSEEC, Lyon · 2022 — 2024</span></li>
+                  <li><strong>Bachelor, Multimedia Communications Manager</strong><span>ESTUDIA, Strasbourg · 2021 — 2022</span></li>
+                  <li><strong>Diploma of Communications</strong><span>IESA, Strasbourg · 2020 — 2021</span></li>
+                  <li><strong>Baccalauréat, Technology, Information Systems &amp; Digital</strong><span>ORT, Strasbourg · 2016 — 2018</span></li>
+                </ul>
+                <p class="role__meta">Certificates</p>
+                <ul class="edu">
+                  <li><strong>RSA</strong><span>Responsible Service of Alcohol · Australia</span></li>
+                  <li><strong>Food Handling Certificate</strong><span>Australia</span></li>
+                </ul>
+              </article>
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
+        </section>
 
-    <!-- CONTACT -->
-    <section class="section section--alt" id="contact">
-      <div class="container contact">
-        <p class="eyebrow">Contact</p>
-        <h2>Planning an event? <em>Let's talk.</em></h2>
-        <p>Based in Melbourne and open to long-term opportunities and sponsorship. Working Holiday Visa (subclass 417) — eligible to work in Australia now.</p>
-        <div class="contact__links">
-          <a href="mailto:illananemard09@icloud.com" class="btn">illananemard09@icloud.com</a>
-          <a href="https://www.linkedin.com/in/illana-nemard" class="btn btn--ghost" target="_blank" rel="noopener">LinkedIn</a>
-        </div>
-      </div>
-    </section>
-  </main>
+        <!-- EVENTS -->
+        <section class="tabpanel" role="tabpanel" id="events" aria-labelledby="tab-events" hidden>
+          <p class="eyebrow">04 · Portfolio</p>
+          <h2>Event <em>highlights</em></h2>
+          <div class="events">
+            <article class="event">
+              <div class="event__img event__img--1" aria-hidden="true"></div>
+              <div class="event__body">
+                <p class="event__type">Corporate events · 2024</p>
+                <h3>LexisNexis France event programme</h3>
+                <p>Conferences, corporate events and product launches for legal and accounting professionals — from concept, budget and suppliers to on-site delivery and promotion.</p>
+                <p class="event__figures">10+ events · Paris</p>
+              </div>
+            </article>
+            <article class="event">
+              <div class="event__img event__img--2" aria-hidden="true"></div>
+              <div class="event__body">
+                <p class="event__type">Internal &amp; external events · 2022–23</p>
+                <h3>Pulsalys</h3>
+                <p>Coordinated internal and external events for a Lyon innovation organisation, paired with content, newsletters and social campaigns.</p>
+                <p class="event__figures">Events + 360° comms · Lyon</p>
+              </div>
+            </article>
+            <article class="event">
+              <div class="event__img event__img--3" aria-hidden="true"></div>
+              <div class="event__body">
+                <p class="event__type">Hospitality · 2025–now</p>
+                <h3>Australian venues</h3>
+                <p>High-volume guest-facing service in Queensland and Victoria venues — the operational side of great guest experiences.</p>
+                <p class="event__figures">QLD &amp; VIC · Australia</p>
+              </div>
+            </article>
+          </div>
+        </section>
 
-  <footer class="footer">
-    <div class="container">
-      <p>© <span id="year"></span> Illana Nemard · Event Manager · Melbourne, Australia</p>
+        <!-- SKILLS -->
+        <section class="tabpanel" role="tabpanel" id="skills" aria-labelledby="tab-skills" hidden>
+          <p class="eyebrow">05 · Toolkit</p>
+          <h2>Skills <em>&amp; tools</em></h2>
+          <h3>Event management</h3>
+          <ul class="tags">
+            <li>Event planning &amp; execution</li>
+            <li>Event logistics</li>
+            <li>Budgets &amp; timelines</li>
+            <li>Vendor management</li>
+            <li>Stakeholder coordination</li>
+            <li>On-site operations</li>
+          </ul>
+          <h3>Communications</h3>
+          <ul class="tags">
+            <li>Social media campaigns</li>
+            <li>Email marketing</li>
+            <li>Audience engagement</li>
+            <li>Brand messaging</li>
+            <li>Storytelling &amp; content</li>
+          </ul>
+          <h3>Tools</h3>
+          <ul class="tags">
+            <li>Canva</li>
+            <li>Meta Business Suite</li>
+            <li>Hootsuite</li>
+            <li>Adobe Photoshop</li>
+            <li>Illustrator</li>
+            <li>InDesign</li>
+            <li>Premiere Pro</li>
+            <li>WordPress</li>
+            <li>HTML/CSS</li>
+          </ul>
+          <h3>Languages</h3>
+          <ul class="tags">
+            <li>French — Native</li>
+            <li>English — Fluent (C1)</li>
+            <li>Spanish — Conversational (A2–B1)</li>
+          </ul>
+        </section>
+
+        <!-- CONTACT -->
+        <section class="tabpanel" role="tabpanel" id="contact" aria-labelledby="tab-contact" hidden>
+          <p class="eyebrow">06 · Contact</p>
+          <h2>Planning an event? <em>Let's talk.</em></h2>
+          <p>Based in Melbourne and open to long-term opportunities and sponsorship. Working Holiday Visa (subclass 417) — eligible to work in Australia now.</p>
+          <div class="contact__links">
+            <a href="mailto:illananemard09@icloud.com" class="btn">illananemard09@icloud.com</a>
+            <a href="https://www.linkedin.com/in/illana-nemard" class="btn btn--ghost" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
+        </section>
+
+      </div>
     </div>
-  </footer>
+  </div>
 
   <script src="script.js"></script>
 </body>
