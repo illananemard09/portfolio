@@ -4,7 +4,8 @@ import { AnimatePresence, motion, useMotionValue, useSpring, useTransform, type 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { person } from "@/content/site";
 import { Calendar, Files, Mail, Notes, QuickLook } from "./Apps";
-import { OSContext, type OSApi, type WinKind } from "./context";
+import { OSContext, useOS as useOSApi, type OSApi, type WinKind } from "./context";
+import { DocIcon, docs, DocView, type Doc } from "./docs";
 import { AppIcon, appNames, type AppId } from "./icons";
 import { Safari, type SafariPage } from "./Safari";
 import { Window } from "./Window";
@@ -18,6 +19,7 @@ const titles: Record<WinKind, string> = {
   calendar: "Calendar",
   files: "Files",
   quicklook: "Quick Look",
+  preview: "Preview",
 };
 
 function Clock() {
@@ -68,6 +70,7 @@ export function Desktop({ onExit, initialApp }: { onExit: () => void; initialApp
   const [safariReq, setSafariReq] = useState<{ page: SafariPage; n: number } | null>(null);
   const [draft, setDraft] = useState<{ subject?: string; body?: string; n: number } | null>(null);
   const [look, setLook] = useState<{ name: string; body: string } | null>(null);
+  const [doc, setDoc] = useState<Doc | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [size, setSize] = useState({ w: 1000, h: 640 });
   const mouseX = useMotionValue(Infinity);
@@ -109,6 +112,12 @@ export function Desktop({ onExit, initialApp }: { onExit: () => void; initialApp
       open("quicklook");
     },
     toast: (m) => setToastMsg(m),
+    openDoc: (id) => {
+      const d = docs.find((x) => x.id === id);
+      if (!d) return;
+      setDoc(d);
+      open("preview");
+    },
   };
 
   useEffect(() => {
@@ -150,6 +159,7 @@ export function Desktop({ onExit, initialApp }: { onExit: () => void; initialApp
     calendar: place(3, 700, 480),
     files: place(4, 680, 420),
     quicklook: place(5, 420, 360),
+    preview: place(1, Math.min(700, size.w * 0.7), Math.min(600, size.h * 0.8)),
   };
 
   const content: Record<WinKind, React.ReactNode> = {
@@ -159,6 +169,7 @@ export function Desktop({ onExit, initialApp }: { onExit: () => void; initialApp
     calendar: <Calendar />,
     files: <Files />,
     quicklook: look ? <QuickLook file={look} /> : null,
+    preview: doc ? <DocView doc={doc} /> : null,
   };
 
   const dockApps: AppId[] = ["safari", "linkedin", "portfolio", "mail", "notes", "calendar", "files"];
@@ -203,21 +214,8 @@ export function Desktop({ onExit, initialApp }: { onExit: () => void; initialApp
           </div>
         )}
 
-        {/* Desktop icons */}
-        <div className={`absolute z-[1] grid gap-4 ${compact ? "inset-x-4 top-14 grid-cols-4" : "right-4 top-12 grid-cols-1"}`}>
-          {[
-            { icon: "cta" as const, label: "Let's work together", run: () => api.openSafari("contact") },
-            { icon: "folder" as const, label: "Case studies", run: () => open("files") },
-            { icon: "txt" as const, label: "read-me.txt", run: () => api.quickLook({ name: "read-me.txt", body: `Hello, and thank you for scrolling this far.\n\nThis desktop is a real little interface — windows move, tabs work, the mail sends.\n\nIf you'd rather skip straight to the point: ${person.email}\n\n— ${person.firstName}` }) },
-          ].map((d) => (
-            <button key={d.label} type="button" onDoubleClick={d.run} onClick={d.run} className="group flex w-20 flex-col items-center gap-1 text-center text-white">
-              <span className="grid h-14 w-14 place-items-center rounded-lg transition-colors group-hover:bg-white/15 group-focus-visible:bg-white/20">
-                <AppIcon id={d.icon} className="h-12 w-12 drop-shadow" />
-              </span>
-              <span className="rounded px-1 text-[11px] leading-tight [text-shadow:0_1px_2px_rgba(0,0,0,.6)]">{d.label}</span>
-            </button>
-          ))}
-        </div>
+        {/* Desktop icons — every file is a piece of the CV */}
+        <DesktopIcons compact={compact} height={size.h} bounds={root} onOpenFolder={() => open("files")} />
 
         {/* Windows */}
         <AnimatePresence>
@@ -225,7 +223,7 @@ export function Desktop({ onExit, initialApp }: { onExit: () => void; initialApp
             <Window
               minimized={w.min}
               key={w.id}
-              title={titles[w.id]}
+              title={w.id === "preview" && doc ? doc.name : titles[w.id]}
               active={top?.id === w.id}
               z={w.z}
               compact={compact}
@@ -284,5 +282,38 @@ export function Desktop({ onExit, initialApp }: { onExit: () => void; initialApp
         </AnimatePresence>
       </div>
     </OSContext.Provider>
+  );
+}
+
+function DesktopIcons({ compact, height, bounds, onOpenFolder }: { compact: boolean; height: number; bounds: React.RefObject<HTMLDivElement | null>; onOpenFolder: () => void }) {
+  const os = useOSApi();
+  const items: { key: string; label: string; icon: React.ReactNode; run: () => void }[] = [
+    { key: "cta", label: "Let's work together", icon: <AppIcon id="cta" className="h-12 w-12 drop-shadow" />, run: () => os.openSafari("contact") },
+    ...docs.slice(0, 3).map((d) => ({ key: d.id, label: d.name, icon: <DocIcon kind={d.kind} className="h-12 w-12 drop-shadow" />, run: () => os.openDoc(d.id) })),
+    { key: "cases", label: "Case studies", icon: <AppIcon id="folder" className="h-12 w-12 drop-shadow" />, run: onOpenFolder },
+    ...docs.slice(3).map((d) => ({ key: d.id, label: d.name, icon: <DocIcon kind={d.kind} className="h-12 w-12 drop-shadow" />, run: () => os.openDoc(d.id) })),
+  ];
+  // macOS-style: fill columns from the top-right corner.
+  const rows = Math.max(3, Math.floor((height - 36 - 90) / 92));
+  return (
+    <div className={compact ? "no-scrollbar absolute inset-x-2 bottom-[70px] top-3 z-[1] grid auto-rows-min grid-cols-4 gap-y-3 overflow-y-auto" : "absolute inset-0 z-[1]"}>
+      {items.map((d, i) => (
+        <motion.button
+          key={d.key}
+          type="button"
+          drag={!compact}
+          dragConstraints={bounds}
+          dragMomentum={false}
+          onTap={d.run}
+          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && d.run()}
+          className={`group flex w-[88px] flex-col items-center gap-1 justify-self-center text-center text-white ${compact ? "" : "absolute"}`}
+          style={compact ? undefined : { right: 12 + Math.floor(i / rows) * 96, top: 36 + (i % rows) * 92 }}
+          title={d.label}
+        >
+          <span className="grid h-14 w-14 place-items-center rounded-lg transition-colors group-hover:bg-white/15 group-focus-visible:bg-white/25">{d.icon}</span>
+          <span className="line-clamp-2 break-words rounded px-1 text-[11px] leading-tight [text-shadow:0_1px_2px_rgba(0,0,0,.7)] group-focus-visible:bg-[#1a73e8]">{d.label.replace(/_/g, "_\u200b")}</span>
+        </motion.button>
+      ))}
+    </div>
   );
 }

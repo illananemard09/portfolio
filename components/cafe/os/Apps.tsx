@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { notebookPages, person, projects, secretIdea } from "@/content/site";
 import { useOS } from "./context";
+import { DocIcon, docs } from "./docs";
 import { AppIcon } from "./icons";
 
 const scroll = "min-h-0 overflow-y-auto overscroll-contain";
@@ -215,11 +216,11 @@ export function Calendar() {
 }
 
 /* ---------------- Files ---------------- */
-type FileItem = { name: string; kind: "folder" | "txt" | "case" | "cv"; run: () => void };
+type FileItem = { name: string; kind: "folder" | "txt" | "case" | "pdf" | "vcf"; run: () => void };
 
 export function Files() {
   const os = useOS();
-  const [place, setPlace] = useState<"Recents" | "Case studies" | "Moodboards">("Recents");
+  const [place, setPlace] = useState<"Recents" | "CV & experience" | "Case studies" | "Moodboards">("Case studies");
   const [sel, setSel] = useState<string | null>(null);
 
   const cases: FileItem[] = projects.map((p) => ({ name: `${p.client}.case`, kind: "case", run: () => os.openSafari(`portfolio/${p.slug}`) }));
@@ -227,10 +228,11 @@ export function Files() {
     Recents: [
       { name: "Case studies", kind: "folder", run: () => setPlace("Case studies") },
       { name: "Moodboards", kind: "folder", run: () => setPlace("Moodboards") },
-      { name: "CV — Illana Nemard", kind: "cv", run: () => os.openSafari("linkedin") },
+      { name: "CV & experience", kind: "folder", run: () => setPlace("CV & experience") },
       { name: "secret.txt", kind: "txt", run: () => os.quickLook({ name: "secret.txt", body: `Shh. An idea I haven't used yet:\n\n“${secretIdea}”\n\nIf you want to make it real, you know where to find me.` }) },
     ],
     "Case studies": cases,
+    "CV & experience": docs.map((d) => ({ name: d.name, kind: d.kind, run: () => os.openDoc(d.id) })),
     Moodboards: [
       { name: "warm-confident.txt", kind: "txt", run: () => os.quickLook({ name: "warm-confident.txt", body: "Palette: ink, bone, vermilion, caramel.\nType: one serif with character, one quiet sans.\nFeeling: a well-lit room five minutes before the doors open." }) },
       { name: "never-shouty.txt", kind: "txt", run: () => os.quickLook({ name: "never-shouty.txt", body: "Confidence is quiet. Invitations should whisper, not shout.\nWhitespace is a guest too." }) },
@@ -241,7 +243,7 @@ export function Files() {
     <div className="absolute inset-0 grid grid-cols-[110px_1fr] sm:grid-cols-[170px_1fr]">
       <aside className="border-r border-black/10 bg-[#f3f2f1]/90 p-2 text-[12.5px]">
         <p className="px-2 pb-1 pt-2 text-[10px] font-semibold uppercase text-black/40">Favourites</p>
-        {(["Recents", "Case studies", "Moodboards"] as const).map((p) => (
+        {(["Recents", "CV & experience", "Case studies", "Moodboards"] as const).map((p) => (
           <button key={p} type="button" onClick={() => setPlace(p)} className={`block w-full rounded-md px-2 py-1.5 text-left ${place === p ? "bg-black/10" : "hover:bg-black/5"}`}>{p}</button>
         ))}
       </aside>
@@ -258,8 +260,9 @@ export function Files() {
             >
               <span className={`grid h-14 w-14 place-items-center rounded-md ${sel === f.name ? "bg-black/10" : ""}`}>
                 {f.kind === "folder" ? <AppIcon id="folder" className="h-12 w-12" />
-                  : f.kind === "txt" ? <AppIcon id="txt" className="h-12 w-12" />
-                  : <span className={`grid h-12 w-10 place-items-center rounded-sm text-[10px] font-bold text-white ${f.kind === "cv" ? "bg-[#0a66c2]" : "bg-[#e0482c]"}`}>{f.kind === "cv" ? "CV" : "CASE"}</span>}
+                  : f.kind === "txt" && !f.name.startsWith("Lang") && !f.name.startsWith("About") ? <AppIcon id="txt" className="h-12 w-12" />
+                  : f.kind === "case" ? <span className="grid h-12 w-10 place-items-center rounded-sm bg-[#e0482c] text-[10px] font-bold text-white">CASE</span>
+                  : <DocIcon kind={f.kind === "txt" ? "txt" : f.kind === "vcf" ? "vcf" : "pdf"} className="h-12 w-12" />}
               </span>
               <span className={`max-w-full break-words rounded px-1 text-[11px] leading-tight ${sel === f.name ? "bg-[#1a73e8] text-white" : ""}`}>{f.name}</span>
             </button>

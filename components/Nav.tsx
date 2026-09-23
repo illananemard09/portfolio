@@ -1,8 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { nav, person } from "@/content/site";
+import { person, type NavItem } from "@/content/site";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 
 function MelbourneClock() {
@@ -17,7 +18,7 @@ function MelbourneClock() {
   return <span suppressHydrationWarning>MEL {time}</span>;
 }
 
-export function Nav() {
+export function Nav({ items }: { items: NavItem[] }) {
   const { scrollTo, stop, start } = useSmoothScroll();
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
@@ -30,14 +31,14 @@ export function Nav() {
   });
 
   useEffect(() => {
-    const els = nav.map((n) => document.getElementById(n.id)).filter(Boolean) as HTMLElement[];
+    const els = items.map((n) => (n.id ? document.getElementById(n.id) : null)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
       { rootMargin: "-45% 0px -50% 0px" },
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  }, [items]);
 
   useEffect(() => {
     if (open) stop();
@@ -62,7 +63,11 @@ export function Nav() {
         <nav className="wrap flex items-center justify-between py-5" aria-label="Main">
           <a
             href="#home"
-            onClick={(e) => { e.preventDefault(); go("home"); }}
+            onClick={(e) => {
+              if (!document.getElementById("home")) return;
+              e.preventDefault();
+              go("home");
+            }}
             className="font-display text-[22px] italic leading-none tracking-tight"
             aria-label={`${person.name}, back to top`}
           >
@@ -70,20 +75,27 @@ export function Nav() {
           </a>
 
           <ul className="hidden items-center gap-7 lg:flex">
-            {nav.map((n) => (
-              <li key={n.id}>
-                <a
-                  href={`#${n.id}`}
-                  onClick={(e) => { e.preventDefault(); go(n.id); }}
-                  className="group relative block overflow-hidden py-1 text-[12px] uppercase tracking-[0.18em]"
-                  aria-current={active === n.id ? "true" : undefined}
-                >
+            {items.map((n) => {
+              const cls = "group relative block overflow-hidden py-1 text-[12px] uppercase tracking-[0.18em]";
+              const inner = (
+                <>
                   <span className="block transition-transform duration-500 ease-[var(--ease-expo)] group-hover:-translate-y-full">{n.label}</span>
-                  <span className="absolute inset-x-0 top-full block transition-transform duration-500 ease-[var(--ease-expo)] group-hover:-translate-y-full font-display italic normal-case tracking-normal text-[14px]">{n.label}</span>
-                  {active === n.id && <motion.span layoutId="nav-dot" className="absolute -bottom-0.5 left-0 h-px w-full bg-white" />}
-                </a>
-              </li>
-            ))}
+                  <span className="absolute inset-x-0 top-full block font-display text-[14px] italic normal-case tracking-normal transition-transform duration-500 ease-[var(--ease-expo)] group-hover:-translate-y-full">{n.label}</span>
+                  {n.id && active === n.id && <motion.span layoutId="nav-dot" className="absolute -bottom-0.5 left-0 h-px w-full bg-white" />}
+                </>
+              );
+              return (
+                <li key={n.label}>
+                  {n.href ? (
+                    <Link href={n.href} className={cls}>{inner}</Link>
+                  ) : (
+                    <a href={`#${n.id}`} onClick={(e) => { e.preventDefault(); go(n.id!); }} className={cls} aria-current={active === n.id ? "true" : undefined}>
+                      {inner}
+                    </a>
+                  )}
+                </li>
+              );
+            })}
           </ul>
 
           <div className="flex items-center gap-5 text-[12px] uppercase tracking-[0.18em]">
@@ -116,22 +128,31 @@ export function Nav() {
             transition={{ duration: 0.9, ease: [0.65, 0, 0.35, 1] }}
           >
             <ul className="wrap mt-28 space-y-1">
-              {nav.map((n, i) => (
-                <li key={n.id} className="overflow-hidden">
-                  <motion.a
-                    href={`#${n.id}`}
-                    onClick={(e) => { e.preventDefault(); go(n.id); }}
-                    className="flex items-baseline gap-4 py-1 font-display text-[clamp(44px,13vw,84px)] font-light leading-[1] tracking-[-0.04em]"
-                    initial={{ y: "110%" }}
-                    animate={{ y: "0%" }}
-                    exit={{ y: "110%" }}
-                    transition={{ duration: 0.8, delay: 0.25 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                  >
+              {items.map((n, i) => {
+                const cls = "flex items-baseline gap-4 py-1 font-display text-[clamp(44px,13vw,84px)] font-light leading-[1] tracking-[-0.04em]";
+                const inner = (
+                  <>
                     <span className="eyebrow text-accent">0{i + 1}</span>
-                    <span className={active === n.id ? "italic" : ""}>{n.label}</span>
-                  </motion.a>
-                </li>
-              ))}
+                    <span className={n.id && active === n.id ? "italic" : ""}>{n.label}</span>
+                  </>
+                );
+                return (
+                  <li key={n.label} className="overflow-hidden">
+                    <motion.div
+                      initial={{ y: "110%" }}
+                      animate={{ y: "0%" }}
+                      exit={{ y: "110%" }}
+                      transition={{ duration: 0.8, delay: 0.25 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      {n.href ? (
+                        <Link href={n.href} onClick={() => setOpen(false)} className={cls}>{inner}</Link>
+                      ) : (
+                        <a href={`#${n.id}`} onClick={(e) => { e.preventDefault(); go(n.id!); }} className={cls}>{inner}</a>
+                      )}
+                    </motion.div>
+                  </li>
+                );
+              })}
             </ul>
             <motion.div
               className="wrap flex flex-wrap justify-between gap-4 border-t border-bone/15 py-6 text-[13px]"

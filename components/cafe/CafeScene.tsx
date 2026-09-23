@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { AnimatePresence, animate, motion, useMotionValue, useMotionValueEvent, useReducedMotion, useSpring, useTransform, type MotionValue } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { person } from "@/content/site";
 import { useSmoothScroll } from "../ui/SmoothScroll";
@@ -54,7 +54,8 @@ function Hotspot({
   );
 }
 
-export function CafeScene() {
+/** `pan` (0 → 1) lowers the camera from the café ceiling down to the table. */
+export function CafeScene({ pan }: { pan?: MotionValue<number> }) {
   const reduce = useReducedMotion();
   const { stop, start } = useSmoothScroll();
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -81,6 +82,20 @@ export function CafeScene() {
   const px = useMotionValue(0);
   const spx = useSpring(px, { stiffness: 50, damping: 18 });
   const bgX = useTransform(spx, (v) => v * -14);
+
+  const idle = useMotionValue(1);
+  const ceilRef = useRef<HTMLDivElement>(null);
+  const [ceilH, setCeilH] = useState(0);
+  useEffect(() => {
+    const el = ceilRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setCeilH(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const panY = useTransform(pan ?? idle, [0, 0.75], [pan ? ceilH : 0, 0]);
+  const [arrived, setArrived] = useState(!pan);
+  useMotionValueEvent(pan ?? idle, "change", (v) => setArrived(v > 0.7));
 
   const discover = (e: Egg) => setFound((f) => (f.includes(e) ? f : [...f, e]));
   const say = useCallback((m: string) => setBubble(m), []);
@@ -180,7 +195,7 @@ export function CafeScene() {
     <div className="relative bg-[#f3eee6] text-ink">
       {/* Heading — above the table on phones, on the wall on desktop */}
       <div
-        className={`wrap pointer-events-none relative z-10 pb-6 pt-24 text-center transition-opacity duration-500 lg:absolute lg:inset-x-0 lg:top-0 lg:pb-0 lg:pt-[6vh] ${mode === "table" ? "" : "opacity-0"}`}
+        className={`wrap pointer-events-none relative z-10 pb-6 pt-24 text-center transition-opacity duration-500 lg:absolute lg:inset-x-0 lg:top-0 lg:pb-0 lg:pt-[6vh] ${mode === "table" && arrived ? "" : "lg:opacity-0"}`}
       >
         <p className="eyebrow text-ink/50">(10) — Table 07 · {person.location.split(",")[0]}</p>
         <p className="mx-auto mt-2 max-w-[22ch] font-display text-[clamp(24px,2.4vw,38px)] font-light italic leading-tight">
@@ -197,6 +212,17 @@ export function CafeScene() {
           px.set((e.clientX - r.left) / r.width - 0.5);
         }}
       >
+        <motion.div className="relative h-full w-max [--ceil:40svh] lg:absolute lg:inset-0 lg:w-auto lg:[--ceil:75svh]" style={{ y: panY }}>
+        {/* The ceiling the camera starts from */}
+        <div ref={ceilRef} aria-hidden className="absolute -inset-x-[20%] bottom-full h-[var(--ceil)] bg-[linear-gradient(180deg,#fbf9f5,#f7f4ef)]">
+          {["22%", "50%", "78%"].map((l) => (
+            <div key={l} className="absolute bottom-0 top-0 w-px" style={{ left: l }}>
+              <div className="h-[70%] w-px bg-[#3a2e26]/60" />
+              <div className="h-[5vh] w-[9vh] -translate-x-1/2 rounded-t-full bg-[#2b2724]" />
+              <div className="absolute left-0 top-[75%] h-[28vh] w-[28vh] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,214,150,.45),transparent_62%)]" />
+            </div>
+          ))}
+        </div>
         <div className="relative aspect-[16/9] h-full lg:absolute lg:left-1/2 lg:top-1/2 lg:h-auto lg:w-[max(100%,calc(100svh*16/9))] lg:-translate-x-1/2 lg:-translate-y-1/2">
           <motion.div ref={cameraRef} className="absolute inset-0 origin-center" style={{ scale: camScale, x: camX, y: camY }}>
             <motion.div className="absolute -inset-x-[1%] inset-y-0" style={{ x: bgX }}>
@@ -303,6 +329,7 @@ export function CafeScene() {
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_40%,transparent_55%,rgba(60,38,20,.28))]" />
           </motion.div>
         </div>
+        </motion.div>
 
         {found.length > 0 && (
           <motion.p

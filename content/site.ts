@@ -19,15 +19,27 @@ export const person = {
   ],
 };
 
-export const nav = [
+export type NavItem = { label: string; id?: string; href?: string };
+
+/** Home: Illana's world → café. */
+export const homeNav: NavItem[] = [
   { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "cafe", label: "The café" },
+  { href: "/portfolio/", label: "Portfolio" },
+  { id: "contact", label: "Contact" },
+];
+
+/** The detailed editorial portfolio page. */
+export const portfolioNav: NavItem[] = [
+  { href: "/", label: "Illana's world" },
   { id: "about", label: "About" },
   { id: "work", label: "Work" },
   { id: "events", label: "Events" },
   { id: "marketing", label: "Marketing" },
   { id: "experience", label: "Experience" },
   { id: "contact", label: "Contact" },
-] as const;
+];
 
 export const keywords = [
   {
@@ -316,6 +328,10 @@ export const campaigns = [
 ];
 
 export type Role = {
+  /** File name shown on the laptop desktop. */
+  file: string;
+  /** Slug of a related case study, if any. */
+  caseStudy?: string;
   company: string;
   position: string;
   period: string;
@@ -327,6 +343,7 @@ export type Role = {
 
 export const roles: Role[] = [
   {
+    file: "2025_Hospitality_Australia.pdf",
     company: "Australian Hospitality Venues",
     position: "Bartender / All-rounder",
     period: "2025 — Now",
@@ -341,6 +358,8 @@ export const roles: Role[] = [
     highlight: "Guest experience, lived from the other side of the bar.",
   },
   {
+    file: "2024_LexisNexis_France.pdf",
+    caseStudy: "lexisnexis-events",
     company: "LexisNexis France",
     position: "External Communications & Events Manager",
     period: "2024",
@@ -355,6 +374,7 @@ export const roles: Role[] = [
     highlight: "10+ events for legal & accounting audiences.",
   },
   {
+    file: "2023_Pimms_Mediation.pdf",
     company: "Pimms Mediation",
     position: "Digital Communications Assistant",
     period: "2023",
@@ -368,6 +388,8 @@ export const roles: Role[] = [
     highlight: "One voice across every digital channel.",
   },
   {
+    file: "2022_Pulsalys.pdf",
+    caseStudy: "pulsalys-360",
     company: "Pulsalys",
     position: "360° Communication Assistant",
     period: "2022 — 2023",
@@ -382,6 +404,8 @@ export const roles: Role[] = [
     highlight: "Events as the heartbeat of communication.",
   },
   {
+    file: "2021_Atelier_du_Relieur.pdf",
+    caseStudy: "atelier-du-relieur",
     company: "L'atelier du Relieur",
     position: "Digital Communications Manager",
     period: "2021 — 2022",
@@ -396,6 +420,7 @@ export const roles: Role[] = [
     highlight: "A craft brand, rebuilt online.",
   },
   {
+    file: "2020_Ocordo_Travaux.pdf",
     company: "Ocordo Travaux",
     position: "Communication & Sales Assistant",
     period: "2020 — 2021",
@@ -409,6 +434,7 @@ export const roles: Role[] = [
     highlight: "Learning that every message has a customer.",
   },
   {
+    file: "2020_Spiero.pdf",
     company: "Spiero",
     position: "Marketing Assistant",
     period: "2020",
@@ -422,6 +448,7 @@ export const roles: Role[] = [
     highlight: "Research first, campaign second.",
   },
   {
+    file: "2020_Strass_Events.pdf",
     company: "Strass Events",
     position: "Event Assistant",
     period: "2020",
@@ -512,3 +539,26 @@ export const notebookPages = [
 
 export const secretIdea =
   "A dinner where every course is served in a different room — and the menu is revealed one conversation at a time.";
+
+/* ---------- Illana's world (home) ---------- */
+
+export const world = {
+  intro: [
+    [{ t: "Made in " }, { t: "France", b: true }, { t: ", now in " }, { t: "Melbourne", b: true }, { t: "." }],
+    [{ t: "Master's in " }, { t: "Communication", b: true }, { t: " & Digital Strategy." }],
+    [{ t: "Loves creating " }, { t: "events", b: true }, { t: ", telling " }, { t: "stories", b: true }, { t: "," }],
+    [{ t: "and a good " }, { t: "flat white", b: true }, { t: "." }],
+  ],
+  phrase: ["One flat white,", "one big idea.", "Plan it, then make it happen."],
+  stickers: {
+    nameTag: "Event maker",
+    receipt: [
+      ["Flat white", "5.00"],
+      ["Croissant", "4.50"],
+      ["10+ events", "✓"],
+      ["5 yrs comms", "✓"],
+      ["FR / EN", "✓"],
+      ["Big ideas", "∞"],
+    ],
+  },
+};

@@ -1,37 +1,24 @@
-import { Finale } from "@/components/cafe/Finale";
-import { Loader } from "@/components/Loader";
+import { CafeFinale } from "@/components/cafe/CafeFinale";
+import { FinalContact } from "@/components/FinalContact";
 import { Nav } from "@/components/Nav";
-import { About } from "@/components/sections/About";
-import { BehindScenes } from "@/components/sections/BehindScenes";
-import { Beyond } from "@/components/sections/Beyond";
-import { Events } from "@/components/sections/Events";
-import { Experience } from "@/components/sections/Experience";
-import { Hero } from "@/components/sections/Hero";
-import { Marketing } from "@/components/sections/Marketing";
-import { Process } from "@/components/sections/Process";
-import { Toolkit } from "@/components/sections/Toolkit";
-import { Work } from "@/components/sections/Work";
 import { Cursor } from "@/components/ui/Cursor";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
+import { Intro } from "@/components/world/Intro";
+import { Phrase } from "@/components/world/Phrase";
+import { WorldHero } from "@/components/world/WorldHero";
+import { homeNav } from "@/content/site";
 
-// Story arc: discover → explore → understand → interact → remember → connect.
+// Illana's world: sticker collage → who I am → a pause → down to the café table → the laptop.
 export default function Home() {
   return (
     <SmoothScroll>
-      <Loader />
-      <Nav />
+      <Nav items={homeNav} />
       <main id="main">
-        <Hero />
-        <About />
-        <Work />
-        <Events />
-        <Marketing />
-        <Experience />
-        <Toolkit />
-        <Process />
-        <BehindScenes />
-        <Beyond />
-        <Finale />
+        <WorldHero />
+        <Intro />
+        <Phrase />
+        <CafeFinale />
+        <FinalContact link={{ href: "/portfolio/", label: "Prefer the full portfolio? Read it here →" }} />
       </main>
       <Cursor />
     </SmoothScroll>
