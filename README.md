@@ -1,33 +1,58 @@
-# Illana Nemard — Event Manager Portfolio
+# Illana Nemard — Ideas into experiences
 
-Personal portfolio website (in English) for an Event Manager / Event & Communications Specialist based in Australia with French expertise.
+An immersive portfolio for a Marketing, Communications & Event Manager.
+The home page is Illana's world: a sticker collage, a short intro, then a first-person café table. Every object on the table is clickable, and the MacBook opens into a desktop where each file is a piece of the CV. A detailed editorial portfolio lives at /portfolio.
 
-Static site: `index.html`, `styles.css`, `script.js` — no build step.
+**Stack:** Next.js 16 (static export) · React 19 · TypeScript · Tailwind CSS 4 · Framer Motion · Lenis smooth scroll.
 
-## How it works
-
-Coffee-shop theme: espresso and caramel browns with sage/forest green touches, paper grain, sticker-style cards.
-
-- **Intro** — a steaming cup with a *Brewing your experience 0→100%* counter, then *Freshly brewed events, served with a French touch.*, then the name and *Enter the café*. The intro opens like a circle onto the stage. *Skip intro* is always available; it plays once per browser session.
-- **Stage** — the café counter: floating stickers (About, Expertise, Experience, Events, Skills, Contact) that react to the pointer, a rotating stamp logo, a green marquee and a custom cursor on desktop. Touching a sticker opens the menu card on that tab.
-- **Menu card panel** — tabbed sections; Expertise is a café menu, Experience has one tab per role shown as a receipt. `Esc` closes it, and links like `index.html#experience` open a tab directly.
-- **Fonts** — Fraunces (display), DM Sans (text) and Caveat (handwritten notes), self-hosted in `fonts/` under the SIL Open Font License.
-
-## Preview locally
-
-Run a local server (fonts don't load from `file://`):
+## Run it
 
 ```bash
-python3 -m http.server 8000
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # static site in out/
+npm run lint     # type-check
 ```
 
-## Customise
+## Structure
 
-- Content lives directly in `index.html`.
-- Add a portrait at `images/portrait.jpg` and replace the `.portrait` block (About tab) with an `<img>`.
-- Add event photos by setting `background-image` on each `.event__img`.
-- To offer a CV download, add `cv.pdf` and a `<a href="cv.pdf" download>` button in the Contact section.
+```
+app/page.tsx          home: Illana's world → the café → the laptop
+app/portfolio/        the detailed editorial portfolio (work, events, marketing, experience…)
+content/site.ts       ← all copy: stickers, intro, roles (+ their desktop file names), projects…
+components/
+  world/              WorldHero (sticker collage), stickers, Intro, Phrase
+  cafe/               CafeFinale (scroll-in focus), CafeScene (photo + outlined objects), notebook
+  cafe/os/            the laptop: Desktop (window manager, dock, CV files), docs (CV documents + Preview),
+                      Window, Safari (+ pages), Mail, Notes, Calendar, Files
+  sections/           sections of the /portfolio page
+  ui/                 SmoothScroll, Cursor, Magnetic, Reveal, Counter, Plate
+```
 
-## Publish with GitHub Pages
+## The home page, in reading order
 
-Settings → Pages → Source: *Deploy from a branch* → select the branch and `/ (root)`.
+1. **Illana's world:** a collage of stickers on espresso brown (a name tag, an all-access pass, a croissant, a latte, an event ticket, a métro ticket, a beret, a paper flower, a coffee bean, a café receipt, a stamp and a polaroid). Drag them around on desktop. Tap one to read a fact.
+2. **Intro:** "Made in France, now in Melbourne…" lights up word by word as you scroll.
+3. **Interlude:** "One flat white, one big idea. Plan it, then make it happen." on cream.
+4. **The café:** a photo of a sunny café table (`public/images/cafe.jpg`) comes into focus as you scroll. Objects trace a white outline on hover or tap, and the laptop screen is live. On phones the photo scrolls sideways.
+5. **The laptop:** a working desktop. **Each file on it is a piece of the CV**: one PDF per role (`2024_LexisNexis_France.pdf`…), plus `CV_Illana_Nemard.pdf`, `About_me.txt`, `Contact.vcf`, `Education.pdf`, `Skills_Toolkit.pdf`, `Languages.txt` and a *Case studies* folder. Files open in Preview. Safari, Mail, Notes, Calendar and Files work too.
+The page ends at the café table; contact lives inside the laptop (Contact.vcf, the Safari contact tab, Mail).
+
+**Accessibility:** everything works with a click or tap. Every object is a real `<button>`. `Esc` closes overlays, and keyboard focus is visible. `prefers-reduced-motion` turns off smooth scroll, the loader, parallax and camera moves. The custom cursor only runs on fine pointers.
+
+## Make it yours
+
+- **Copy:** edit `content/site.ts`. Nothing else needs to change.
+- **Photography:** put images in `public/images/` and set `image: "/images/your-photo.jpg"` on a project. Until then each project shows an art-directed SVG plate instead of a stock photo. The polaroid sticker takes an `image` prop too.
+- **Desktop files:** each role in `content/site.ts` has a `file` name. Add or rename roles there and the laptop desktop follows.
+- **LinkedIn:** set `person.linkedin` in `content/site.ts`. It's used by the nav menu, the final CTA and the LinkedIn-inspired page inside the laptop.
+- **Contact form:** the laptop's form and Mail app open the visitor's mail client (`mailto:`) with the message filled in. That needs no backend. To receive messages directly, point the form at a service such as Formspree.
+- **Fonts:** Fraunces (display), DM Sans (text) and Caveat (handwriting) are self-hosted in `app/fonts/` under the SIL Open Font License.
+
+## Publish on GitHub Pages
+
+`.github/workflows/deploy.yml` builds on every push and deploys the default branch.
+Once, in **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**.
+The base path (`/portfolio`) and the site URL are picked up automatically.
+
+On any other host (Vercel, Netlify…), run `npm run build` and serve `out/`. Set `NEXT_PUBLIC_SITE_URL` so the canonical URL and sitemap are correct.
