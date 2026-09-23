@@ -36,7 +36,7 @@ components/
 3. **Interlude:** "One flat white, one big idea. Plan it, then make it happen." on cream.
 4. **The café:** the camera comes down from the ceiling to a sunny café table. Every object has a "+" marker. On phones the table scrolls sideways.
 5. **The laptop:** a working desktop. **Each file on it is a piece of the CV**: one PDF per role (`2024_LexisNexis_France.pdf`…), plus `CV_Illana_Nemard.pdf`, `About_me.txt`, `Contact.vcf`, `Education.pdf`, `Skills_Toolkit.pdf`, `Languages.txt` and a *Case studies* folder. Files open in Preview. Safari, Mail, Notes, Calendar and Files work too.
-6. **Contact**, with a link to the full `/portfolio` page.
+The page ends at the café table; contact lives inside the laptop (Contact.vcf, the Safari contact tab, Mail).
 
 **Accessibility:** everything works with a click or tap. Every object is a real `<button>`. `Esc` closes overlays, and keyboard focus is visible. `prefers-reduced-motion` turns off smooth scroll, the loader, parallax and camera moves. The custom cursor only runs on fine pointers.
 

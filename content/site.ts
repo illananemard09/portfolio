@@ -27,7 +27,6 @@ export const homeNav: NavItem[] = [
   { id: "about", label: "About" },
   { id: "cafe", label: "The café" },
   { href: "/portfolio/", label: "Portfolio" },
-  { id: "contact", label: "Contact" },
 ];
 
 /** The detailed editorial portfolio page. */
