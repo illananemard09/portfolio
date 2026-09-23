@@ -4,36 +4,32 @@ import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, use
 import { useCallback, useEffect, useRef, useState } from "react";
 import { person } from "@/content/site";
 import { useSmoothScroll } from "../ui/SmoothScroll";
+import { Backdrop } from "./Backdrop";
 import { NotebookOverlay } from "./NotebookOverlay";
-import { Cup, LaptopBase, LaptopScreenPreview, Mouse, NotebookClosedSpread, Pen, Steam, Sugar, TentCard } from "./objects";
+import { BurgundyNotebook, Cup, LaptopBase, LaptopScreenPreview, Mouse, Pen, Phone, PlusMarker, Steam, Sugar, Sunglasses } from "./objects";
 import { Desktop } from "./os/Desktop";
 
 const cine = [0.65, 0, 0.35, 1] as const;
 
-// Warm and cool bokeh lights seen through the café window (deterministic, so SSR matches).
-const bokeh = Array.from({ length: 34 }, (_, i) => {
-  const r = (n: number) => ((Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1;
-  return { x: r(1) * 100, y: r(2) * 70, s: 14 + r(3) * 60, warm: r(4) > 0.3, o: 0.25 + r(5) * 0.5, d: r(6) * 6 };
-});
+type Egg = "sticker" | "sugar" | "flowers" | "espresso" | "board" | "corner";
+const EGGS: Egg[] = ["sticker", "sugar", "flowers", "espresso", "board", "corner"];
 
-type Egg = "sticker" | "sugar" | "card" | "corner";
-const EGGS: Egg[] = ["sticker", "sugar", "card", "corner"];
-
+/** A clickable object on the table, marked with a "+" like a shoppable photo. */
 function Hotspot({
   label,
   hint,
   onClick,
   className,
+  marker = { left: "50%", top: "20%" },
   children,
-  glow,
-  z = 1,
+  z = 2,
 }: {
   label: string;
   hint: string;
   onClick: () => void;
   className: string;
-  children: React.ReactNode;
-  glow?: boolean;
+  marker?: { left: string; top: string };
+  children?: React.ReactNode;
   z?: number;
 }) {
   return (
@@ -44,16 +40,15 @@ function Hotspot({
       data-cursor={hint}
       className={`group absolute block rounded-md outline-offset-4 ${className}`}
       style={{ zIndex: z }}
-      whileHover={{ y: -6, scale: 1.02 }}
+      whileHover={{ y: -4 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
       {children}
-      {glow && (
-        <span aria-hidden className="pointer-events-none absolute -inset-2 animate-pulse rounded-lg ring-1 ring-[#f6c78b]/50" />
-      )}
-      <span className="pointer-events-none absolute -top-9 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-full bg-[#121110]/85 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-[#ece7df] opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 lg:block">
-        {hint}
+      <span className="absolute" style={{ left: marker.left, top: marker.top }}>
+        <span className="absolute -translate-x-1/2 -translate-y-1/2">
+          <PlusMarker label={hint} />
+        </span>
       </span>
     </motion.button>
   );
@@ -62,7 +57,7 @@ function Hotspot({
 export function CafeScene() {
   const reduce = useReducedMotion();
   const { stop, start } = useSmoothScroll();
-  const sceneRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
 
@@ -73,24 +68,19 @@ export function CafeScene() {
   const [bubble, setBubble] = useState<string | null>(null);
   const [penLine, setPenLine] = useState(0);
   const [mouseRun, setMouseRun] = useState(false);
-  const [card, setCard] = useState(false);
+  const [phoneLit, setPhoneLit] = useState(false);
+  const [golden, setGolden] = useState(false);
   const [found, setFound] = useState<Egg[]>([]);
-  const [touched, setTouched] = useState(false);
 
   // Camera
   const camScale = useMotionValue(1);
   const camX = useMotionValue(0);
   const camY = useMotionValue(0);
 
-  // Pointer parallax on the background
+  // Gentle parallax between the café behind and the table in front.
   const px = useMotionValue(0);
-  const py = useMotionValue(0);
   const spx = useSpring(px, { stiffness: 50, damping: 18 });
-  const spy = useSpring(py, { stiffness: 50, damping: 18 });
-  const bgX = useTransform(spx, (v) => v * -24);
-  const bgY = useTransform(spy, (v) => v * -12);
-  const tableX = useTransform(spx, (v) => v * 10);
-  const tableY = useTransform(spy, (v) => v * 6);
+  const bgX = useTransform(spx, (v) => v * -14);
 
   const discover = (e: Egg) => setFound((f) => (f.includes(e) ? f : [...f, e]));
   const say = useCallback((m: string) => setBubble(m), []);
@@ -101,10 +91,15 @@ export function CafeScene() {
     return () => clearTimeout(t);
   }, [bubble]);
 
+  // On phones the table is wider than the screen: start centred on the laptop.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+  }, []);
+
   const openLaptop = useCallback(
     (page: string | null = null) => {
       if (mode !== "table") return;
-      setTouched(true);
       setOsPage(page ? { page } : null);
       const cam = cameraRef.current;
       const scr = screenRef.current;
@@ -115,9 +110,12 @@ export function CafeScene() {
       setMode("zoom");
       const c = cam.getBoundingClientRect();
       const s = scr.getBoundingClientRect();
-      const k = Math.min((c.width * 0.98) / s.width, (c.height * 0.98) / s.height);
-      const tx = -k * (s.left + s.width / 2 - (c.left + c.width / 2));
-      const ty = -k * (s.top + s.height / 2 - (c.top + c.height / 2));
+      // Scale about the camera centre, then bring the screen to the middle of the viewport.
+      const k = Math.min(window.innerWidth / s.width, window.innerHeight / s.height);
+      const ccx = c.left + c.width / 2;
+      const ccy = c.top + c.height / 2;
+      const tx = window.innerWidth / 2 - ccx - k * (s.left + s.width / 2 - ccx);
+      const ty = window.innerHeight / 2 - ccy - k * (s.top + s.height / 2 - ccy);
       animate(camScale, k, { duration: 1.3, ease: cine });
       animate(camX, tx, { duration: 1.3, ease: cine });
       animate(camY, ty, { duration: 1.3, ease: cine }).then(() => setMode("desktop"));
@@ -153,7 +151,6 @@ export function CafeScene() {
   }, [mode, closeLaptop]);
 
   const clickCoffee = () => {
-    setTouched(true);
     const n = coffeeClicks + 1;
     setCoffeeClicks(n);
     if (n === 1) say("Take a break. Great ideas need one.");
@@ -163,204 +160,171 @@ export function CafeScene() {
   };
   const level = coffeeClicks >= 3 ? 0.15 : 1 - coffeeClicks * 0.18;
 
-  const clickPen = () => {
-    setTouched(true);
-    setPenLine((n) => n + 1);
-  };
-
   const clickMouse = () => {
-    setTouched(true);
     if (mouseRun) return;
     setMouseRun(true);
     setTimeout(() => openLaptop("contact"), reduce ? 0 : 1500);
   };
 
-  const pos = {
-    // Mobile first, then the desktop composition from lg.
-    laptop: "left-[6%] top-[23%] w-[88%] md:left-[15%] md:top-[22%] md:w-[70%] lg:left-[29%] lg:top-[7%] lg:w-[42%]",
-    cup: "left-[60%] top-[70%] w-[34%] md:left-[66%] md:top-[68%] md:w-[26%] lg:left-[75%] lg:top-[45%] lg:w-[14%]",
-    notebook: "left-[3%] top-[60%] w-[56%] -rotate-[8deg] md:top-[63%] md:w-[44%] lg:left-[3%] lg:top-[52%] lg:w-[26%] lg:-rotate-[10deg]",
-    pen: "left-[24%] top-[86%] w-[40%] rotate-[-22deg] md:left-[22%] md:top-[88%] md:w-[30%] lg:left-[18%] lg:top-[82%] lg:w-[17%] lg:rotate-[-28deg]",
-    mouse: "left-[83%] top-[59%] w-[11%] rotate-[8deg] md:left-[87%] md:top-[56%] md:w-[7%] lg:left-[74%] lg:top-[72%] lg:w-[4.4%] lg:rotate-[10deg]",
-    sugar: "left-[76%] top-[90%] w-[12%] rotate-[18deg] md:left-[82%] md:top-[91%] md:w-[9%] lg:left-[88%] lg:top-[73%] lg:w-[4.5%]",
-    card: "left-[64%] top-[59%] w-[15%] md:left-[3%] md:top-[48%] md:w-[10%] lg:left-[8%] lg:top-[31%] lg:w-[7%]",
+  const clickPhone = () => {
+    if (!phoneLit) {
+      setPhoneLit(true);
+      say(`New message from ${person.firstName}: “Have an idea? Let's make it happen.”`);
+    } else {
+      setPhoneLit(false);
+      openLaptop("contact");
+    }
   };
 
   return (
-    <div
-      ref={sceneRef}
-      className="relative h-[100svh] min-h-[620px] overflow-clip bg-[#140d09] text-[#ece7df]"
-      onPointerMove={(e) => {
-        if (e.pointerType !== "mouse") return;
-        const r = e.currentTarget.getBoundingClientRect();
-        px.set((e.clientX - r.left) / r.width - 0.5);
-        py.set((e.clientY - r.top) / r.height - 0.5);
-      }}
-    >
-      <motion.div ref={cameraRef} className="absolute inset-0 origin-center" style={{ scale: camScale, x: camX, y: camY }}>
-        {/* Café interior, softly out of focus */}
-        <motion.div aria-hidden className="absolute -inset-x-[4%] top-[-4%] h-[48%] lg:h-[46%]" style={{ x: bgX, y: bgY }}>
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,#2b1c13,#3a2519_60%,#24170f)]" />
-          {/* window */}
-          <div className="absolute inset-x-[12%] top-[8%] bottom-[8%] overflow-hidden rounded-t-[40px] bg-[linear-gradient(180deg,#1c2433,#3b3a45_55%,#6b4a38)] [filter:blur(2.5px)]">
-            {bokeh.map((b, i) => (
-              <motion.span
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  left: `${b.x}%`,
-                  top: `${b.y}%`,
-                  width: b.s,
-                  height: b.s,
-                  opacity: b.o,
-                  background: b.warm ? "radial-gradient(circle, #ffd59a, rgba(255,170,90,.2) 60%, transparent 70%)" : "radial-gradient(circle, #cfe3ff, rgba(140,180,255,.15) 60%, transparent 70%)",
-                }}
-                animate={reduce ? undefined : { opacity: [b.o, b.o * 0.5, b.o] }}
-                transition={{ duration: 4 + b.d, repeat: Infinity, ease: "easeInOut" }}
-              />
-            ))}
-            {/* mullions */}
-            <div className="absolute inset-y-0 left-1/3 w-2 bg-[#20140d]" />
-            <div className="absolute inset-y-0 left-2/3 w-2 bg-[#20140d]" />
-            <div className="absolute inset-x-0 top-[42%] h-2 bg-[#20140d]" />
-          </div>
-          {/* pendant lamps */}
-          {["18%", "82%"].map((l) => (
-            <div key={l} className="absolute top-0" style={{ left: l }}>
-              <div className="mx-auto h-[6vh] w-px bg-black/60" />
-              <div className="h-[3.2vh] w-[6vh] -translate-x-1/2 rounded-t-full bg-[#1a120c]" />
-              <div className="absolute left-0 top-[8vh] h-[30vh] w-[30vh] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[radial-gradient(circle,rgba(255,196,120,.55),transparent_60%)]" />
-            </div>
-          ))}
-          {/* shelf silhouette */}
-          <div className="absolute bottom-[10%] left-0 h-[3%] w-[14%] bg-[#1a100a]" />
-          <div className="absolute bottom-[13%] left-[3%] flex gap-2">
-            {[0, 1, 2].map((i) => <span key={i} className="h-[2.4vh] w-[2vh] rounded-b-md bg-[#d9cfbf]/40" />)}
-          </div>
-        </motion.div>
+    <div className="relative bg-[#f3eee6] text-ink">
+      {/* Heading — above the table on phones, on the wall on desktop */}
+      <div
+        className={`wrap pointer-events-none relative z-10 pb-6 pt-24 text-center transition-opacity duration-500 lg:absolute lg:inset-x-0 lg:top-0 lg:pb-0 lg:pt-[6vh] ${mode === "table" ? "" : "opacity-0"}`}
+      >
+        <p className="eyebrow text-ink/50">(10) — Table 07 · {person.location.split(",")[0]}</p>
+        <p className="mx-auto mt-2 max-w-[22ch] font-display text-[clamp(24px,2.4vw,38px)] font-light italic leading-tight">
+          Everything on this table is clickable.
+        </p>
+      </div>
 
-        {/* Table */}
-        <motion.div aria-hidden className="absolute inset-x-0 bottom-0 top-[40%] lg:top-[36%]" style={{ x: tableX, y: tableY }}>
-          <div className="wood absolute -inset-x-[30%] bottom-[-40%] top-0 origin-top [transform:perspective(900px)_rotateX(38deg)]" />
-          <div className="absolute inset-x-0 top-0 h-3 bg-gradient-to-b from-[#a57a58]/70 to-transparent" />
-          <div className="absolute inset-0 bg-[radial-gradient(80%_60%_at_40%_30%,rgba(255,200,140,.18),transparent_70%)]" />
-        </motion.div>
-
-        {/* Objects */}
-        <motion.div className="absolute inset-0" style={{ x: tableX, y: tableY }}>
-          {/* Small vase, purely decorative */}
-          <div aria-hidden className="absolute left-[86%] top-[22%] hidden w-[4%] lg:block">
-            <div className="mx-auto h-[9vh] w-px rotate-6 bg-[#4f6b3a]" />
-            <div className="absolute left-[40%] top-0 h-[2vh] w-[1.4vh] rotate-[30deg] rounded-full bg-[#6c8a4c]" />
-            <div className="absolute left-[55%] top-[2.5vh] h-[2vh] w-[1.4vh] -rotate-[30deg] rounded-full bg-[#6c8a4c]" />
-            <div className="h-[7vh] w-full rounded-b-[40%] rounded-t-md bg-gradient-to-r from-[#bdb3a3] via-[#efe8dc] to-[#a89e8e] shadow-[6px_12px_18px_rgba(0,0,0,.45)]" />
-          </div>
-
-          <Hotspot label="Table card — flip it" hint="Flip" className={pos.card} onClick={() => { setCard((c) => !c); discover("card"); setTouched(true); }} z={2}>
-            <TentCard flipped={card} />
-          </Hotspot>
-
-          {/* Laptop */}
-          <div className={`absolute ${pos.laptop}`} style={{ zIndex: 3 }}>
-            <motion.button
-              type="button"
-              onClick={() => openLaptop()}
-              aria-label="Open the MacBook — an interactive desktop"
-              data-cursor="Open"
-              className="group relative block w-full rounded-t-[14px] outline-offset-4"
-              whileHover={{ y: -4 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            >
-              <div className="rounded-t-[1.6vw] bg-[#0d0d0e] p-[1.3%] pb-[2.2%] shadow-[0_30px_80px_-10px_rgba(0,0,0,.7),0_0_0_1px_#3a3a3c] lg:rounded-t-[14px]">
-                <div ref={screenRef} className="relative aspect-[16/10] overflow-hidden rounded-[3px] [box-shadow:0_0_60px_rgba(240,122,95,.35)]">
-                  <LaptopScreenPreview cursorTarget={mouseRun} />
-                </div>
-              </div>
-              {!touched && <span aria-hidden className="pointer-events-none absolute -inset-3 animate-pulse rounded-2xl ring-1 ring-[#f6c78b]/50" />}
-            </motion.button>
-            <div className="relative -mt-px">
-              <LaptopBase />
-              <button
-                type="button"
-                aria-label="A sticker on the laptop"
-                data-cursor="Peel"
-                onClick={() => { discover("sticker"); say("Made in Strasbourg. Assembled in Melbourne. Powered by flat whites."); }}
-                className="absolute right-[7%] top-[46%] grid aspect-square w-[5.5%] min-w-[22px] -rotate-12 place-items-center rounded-full bg-[#e0482c] font-display text-[min(1vw,12px)] italic text-[#f5f2ec] shadow transition-transform hover:rotate-12 hover:scale-110 [@media(max-width:1023px)]:text-[2.4vw]"
-              >
-                in
-              </button>
-            </div>
-          </div>
-
-          <Hotspot label="Open the notebook" hint="Read" className={pos.notebook} onClick={() => { setNotebook(true); setTouched(true); }} z={4}>
-            <NotebookClosedSpread />
-          </Hotspot>
-
-          <Hotspot label="Pick up the pen" hint="Write" className={pos.pen} onClick={clickPen} z={6}>
-            <motion.div key={penLine} animate={penLine && !reduce ? { x: [0, 8, -6, 10, 0], y: [0, -3, 2, -2, 0], rotate: [0, -3, 2, -2, 0] } : undefined} transition={{ duration: 1.6 }}>
-              <Pen />
+      <div
+        ref={scrollerRef}
+        className="no-scrollbar relative h-[72svh] min-h-[380px] overflow-x-auto overflow-y-hidden overscroll-x-contain lg:h-[100svh] lg:min-h-[620px] lg:overflow-hidden"
+        onPointerMove={(e) => {
+          if (e.pointerType !== "mouse") return;
+          const r = e.currentTarget.getBoundingClientRect();
+          px.set((e.clientX - r.left) / r.width - 0.5);
+        }}
+      >
+        <div className="relative aspect-[16/9] h-full lg:absolute lg:left-1/2 lg:top-1/2 lg:h-auto lg:w-[max(100%,calc(100svh*16/9))] lg:-translate-x-1/2 lg:-translate-y-1/2">
+          <motion.div ref={cameraRef} className="absolute inset-0 origin-center" style={{ scale: camScale, x: camX, y: camY }}>
+            <motion.div className="absolute -inset-x-[1%] inset-y-0" style={{ x: bgX }}>
+              <Backdrop golden={golden} />
             </motion.div>
-          </Hotspot>
 
-          <Hotspot label="Take a sip of coffee" hint="Sip" className={pos.cup} onClick={clickCoffee} z={5}>
-            <div className="relative aspect-[200/170]">
-              <div className="pointer-events-none absolute -top-[70%] left-[22%] h-[90%] w-[50%]">
-                <Steam strong={coffeeClicks > 0 && coffeeClicks < 3} />
-              </div>
-              <Cup level={level} />
-            </div>
-          </Hotspot>
+            {/* Background details that hide a little something */}
+            <Hotspot label="The espresso machine" hint="One more?" className="left-[18%] top-[34%] h-[19%] w-[11%]" marker={{ left: "50%", top: "30%" }}
+              onClick={() => { discover("espresso"); say("Double espresso, no sugar. The fuel behind every run-of-show."); }} z={1} />
+            <Hotspot label="The brand wall" hint="Brands" className="left-[68.7%] top-[12%] h-[22%] w-[17%]" marker={{ left: "88%", top: "12%" }}
+              onClick={() => { discover("board"); say("LexisNexis, Pulsalys, Pimms, L'atelier du Relieur, Spiero, Strass Events — and yours next?"); }} z={1} />
+            <Hotspot label="Fresh flowers" hint="Smell" className="left-[84%] top-[47%] h-[31%] w-[10%]" marker={{ left: "50%", top: "22%" }}
+              onClick={() => { discover("flowers"); say("Fresh flowers on every event table. Details are the design."); }} z={2} />
 
-          <Hotspot label="Click the mouse — it controls the laptop" hint="Click" className={pos.mouse} onClick={clickMouse} z={5}>
-            <Mouse />
-          </Hotspot>
-
-          <Hotspot label="A sugar packet" hint="Tear" className={pos.sugar} onClick={() => { discover("sugar"); say("Sweet. You're the kind of person who notices details — we'd get along."); }} z={5}>
-            <Sugar />
-          </Hotspot>
-
-          {/* Pen writing */}
-          <AnimatePresence>
-            {penLine > 0 && (
-              <motion.p
-                key={penLine}
-                aria-live="polite"
-                className="pointer-events-none absolute left-[4%] top-[50%] z-[7] w-[60%] font-hand text-[clamp(20px,2.2vw,34px)] leading-tight text-[#f6ead3] [text-shadow:0_2px_12px_rgba(0,0,0,.6)] lg:left-[30%] lg:top-[84%] lg:w-auto"
-                initial={{ clipPath: "inset(0 100% 0 0)" }}
-                animate={{ clipPath: "inset(0 0% 0 0)" }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: reduce ? 0 : 2.4, ease: "linear" }}
+            {/* Laptop */}
+            <div className="absolute left-[35%] top-[31%] w-[30%]" style={{ zIndex: 3 }}>
+              <motion.button
+                type="button"
+                onClick={() => openLaptop()}
+                aria-label="Open the MacBook — an interactive desktop"
+                data-cursor="Open"
+                className="group relative block w-full rounded-t-[12px] outline-offset-4"
+                whileHover={{ y: -3 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
               >
-                {["Every great experience starts with an idea.", "Write it down before it leaves.", "Details are the design."][(penLine - 1) % 3]}
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </motion.div>
+                <div className="rounded-t-[min(1.2vw,14px)] bg-[#0d0d0e] p-[1.3%] pb-[2.2%] shadow-[0_24px_60px_-18px_rgba(40,25,10,.55),0_0_0_1px_#55555a]">
+                  <div ref={screenRef} className="relative aspect-[16/10] overflow-hidden rounded-[3px]">
+                    <LaptopScreenPreview cursorTarget={mouseRun} />
+                  </div>
+                </div>
+                <span className="absolute left-[50%] top-[12%]">
+                  <span className="absolute -translate-x-1/2 -translate-y-1/2"><PlusMarker label="Open the laptop" /></span>
+                </span>
+              </motion.button>
+              <div className="relative -mt-px">
+                <LaptopBase />
+                <button
+                  type="button"
+                  aria-label="A sticker on the laptop"
+                  data-cursor="Peel"
+                  onClick={() => { discover("sticker"); say("Made in Strasbourg. Assembled in Melbourne. Powered by flat whites."); }}
+                  className="absolute right-[7%] top-[46%] grid aspect-square w-[5.5%] min-w-[14px] -rotate-12 place-items-center rounded-full bg-[#e0482c] font-display text-[min(1vw,12px)] italic text-[#f5f2ec] shadow transition-transform hover:rotate-12 hover:scale-110"
+                >
+                  in
+                </button>
+              </div>
+            </div>
 
-        {/* Light & vignette */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_45%,transparent_40%,rgba(0,0,0,.65))]" />
-      </motion.div>
+            <Hotspot label="Take a sip of coffee" hint="Sip" className="left-[11%] top-[63%] w-[15%]" marker={{ left: "46%", top: "22%" }} onClick={clickCoffee} z={4}>
+              <div className="relative aspect-[200/170]">
+                <div className="pointer-events-none absolute -top-[70%] left-[22%] h-[90%] w-[50%]">
+                  <Steam strong={coffeeClicks > 0 && coffeeClicks < 3} />
+                </div>
+                <Cup level={level} dark />
+              </div>
+            </Hotspot>
 
-      {/* Scene UI */}
-      <div className={`pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between p-[var(--gutter)] pt-20 transition-opacity duration-500 ${mode === "table" ? "" : "opacity-0"}`}>
-        <div>
-          <p className="eyebrow text-[#ece7df]/60">(10) — Table 07</p>
-          <p className="mt-2 max-w-[18ch] font-display text-[clamp(22px,2.4vw,36px)] font-light italic leading-tight">
-            Everything on this table is clickable.
-          </p>
+            <Hotspot label="A sugar packet" hint="Sweet" className="left-[27.5%] top-[80%] w-[3.4%] rotate-[14deg]" marker={{ left: "50%", top: "50%" }}
+              onClick={() => { discover("sugar"); say("Sweet. You're the kind of person who notices details — we'd get along."); }} z={4}>
+              <Sugar />
+            </Hotspot>
+
+            <Hotspot label="The phone — read the new message" hint={phoneLit ? "Reply" : "Unlock"} className="left-[41%] top-[77%] w-[5.4%] -rotate-[8deg]" marker={{ left: "50%", top: "45%" }} onClick={clickPhone} z={5}>
+              <Phone lit={phoneLit} />
+            </Hotspot>
+
+            <Hotspot label="Sunglasses — switch to golden hour" hint={golden ? "Daylight" : "Golden hour"} className="left-[50%] top-[80%] w-[11%] rotate-[4deg]" marker={{ left: "50%", top: "40%" }}
+              onClick={() => { setGolden((g) => !g); say(golden ? "Back to daylight." : "Golden hour in Melbourne. The best light for recap photos."); }} z={5}>
+              <div className="aspect-[220/90]"><Sunglasses /></div>
+            </Hotspot>
+
+            <Hotspot label="Click the mouse — it controls the laptop" hint="Click" className="left-[67%] top-[64%] w-[3.4%] rotate-[8deg]" marker={{ left: "50%", top: "40%" }} onClick={clickMouse} z={4}>
+              <Mouse />
+            </Hotspot>
+
+            <Hotspot label="Open the notebook" hint="Read" className="left-[68%] top-[74%] w-[15%] rotate-[-4deg]" marker={{ left: "50%", top: "45%" }} onClick={() => setNotebook(true)} z={4}>
+              <BurgundyNotebook />
+            </Hotspot>
+
+            <Hotspot label="Pick up the pen" hint="Write" className="left-[83%] top-[80%] w-[11%]" marker={{ left: "50%", top: "50%" }} onClick={() => setPenLine((n) => n + 1)} z={5}>
+              <motion.div key={penLine} className="rotate-[-38deg]" animate={penLine && !reduce ? { x: [0, 8, -6, 10, 0], y: [0, -3, 2, -2, 0], rotate: [0, -3, 2, -2, 0] } : undefined} transition={{ duration: 1.6 }}>
+                <Pen />
+              </motion.div>
+            </Hotspot>
+
+            {/* Pen writing */}
+            <AnimatePresence>
+              {penLine > 0 && (
+                <motion.p
+                  key={penLine}
+                  aria-live="polite"
+                  className="pointer-events-none absolute left-[60%] top-[90%] z-[6] whitespace-nowrap font-hand text-[min(2vw,30px)] leading-tight text-[#f6ead3] [text-shadow:0_2px_10px_rgba(0,0,0,.5)] [@media(max-width:1023px)]:text-[18px]"
+                  initial={{ clipPath: "inset(0 100% 0 0)" }}
+                  animate={{ clipPath: "inset(0 0% 0 0)" }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reduce ? 0 : 2.4, ease: "linear" }}
+                >
+                  {["Every great experience starts with an idea.", "Write it down before it leaves.", "Details are the design."][(penLine - 1) % 3]}
+                </motion.p>
+              )}
+            </AnimatePresence>
+
+            {/* Soft vignette */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_40%,transparent_55%,rgba(60,38,20,.28))]" />
+          </motion.div>
         </div>
+
         {found.length > 0 && (
-          <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="eyebrow rounded-full border border-[#ece7df]/20 px-3 py-2 text-[#ece7df]/70" aria-live="polite">
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="eyebrow absolute right-[var(--gutter)] top-24 z-10 hidden rounded-full bg-white/80 px-3 py-2 text-ink/70 backdrop-blur lg:block"
+            aria-live="polite"
+          >
             Secrets found {found.length}/{EGGS.length}
           </motion.p>
         )}
       </div>
 
+      <p className="wrap pb-2 pt-3 text-center eyebrow text-ink/45 lg:hidden">
+        ← Swipe to explore · {found.length ? `secrets ${found.length}/${EGGS.length}` : "tap the +"} →
+      </p>
+
       <AnimatePresence>
         {bubble && (
           <motion.div
             role="status"
-            className="absolute bottom-[6%] left-1/2 z-20 w-[min(92%,460px)] -translate-x-1/2 rounded-full bg-[#ece7df] px-5 py-3 text-center font-hand text-[22px] leading-tight text-[#121110] shadow-2xl"
+            className="fixed bottom-[5%] left-1/2 z-[240] w-[min(92vw,480px)] -translate-x-1/2 rounded-2xl bg-white/95 px-5 py-3 text-center font-hand text-[22px] leading-tight text-[#121110] shadow-2xl"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10 }}
@@ -374,7 +338,7 @@ export function CafeScene() {
       <AnimatePresence>
         {mode === "desktop" && (
           <motion.div
-            className="fixed inset-0 z-[250] flex flex-col bg-[#0b0706]"
+            className="fixed inset-0 z-[250] flex flex-col bg-[#e9e2d7]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.35 } }}
@@ -383,20 +347,20 @@ export function CafeScene() {
             aria-modal="true"
             aria-label="Illana's laptop"
           >
-            <div className="flex items-center justify-between px-4 py-2 text-[#ece7df] sm:hidden">
+            <div className="flex items-center justify-between px-4 py-2 text-ink sm:hidden">
               <span className="eyebrow opacity-60">Illana&apos;s laptop</span>
               <button type="button" onClick={closeLaptop} className="eyebrow min-h-11 px-2">← Back to the café</button>
             </div>
             <div className="relative flex min-h-0 flex-1 items-center justify-center sm:px-[2vmin] sm:pb-[2vmin] sm:pt-16">
               <div className="relative h-full w-full sm:aspect-[16/10] sm:h-auto sm:w-[min(calc(100vw-4vmin),calc((100svh-64px-2vmin)*1.6))]">
-                <div className="h-full w-full overflow-hidden sm:rounded-[18px] sm:border-[10px] sm:border-[#0d0d0e] sm:shadow-[0_0_0_1px_#3a3a3c,0_40px_120px_rgba(0,0,0,.7)]">
+                <div className="h-full w-full overflow-hidden sm:rounded-[18px] sm:border-[10px] sm:border-[#0d0d0e] sm:shadow-[0_0_0_1px_#55555a,0_40px_100px_-20px_rgba(60,38,20,.5)]">
                   <Desktop onExit={closeLaptop} initialApp={osPage} />
                 </div>
               </div>
               <button
                 type="button"
                 onClick={closeLaptop}
-                className="eyebrow absolute right-4 top-2.5 z-10 hidden min-h-11 rounded-full bg-[#ece7df]/10 px-4 text-[#ece7df] backdrop-blur hover:bg-[#ece7df]/20 sm:block"
+                className="eyebrow absolute right-4 top-2.5 z-10 hidden min-h-11 rounded-full bg-ink/5 px-4 text-ink backdrop-blur hover:bg-ink/10 sm:block"
               >
                 ← Back to the café
               </button>
@@ -406,16 +370,11 @@ export function CafeScene() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {notebook && (
-          <NotebookOverlay
-            onClose={() => setNotebook(false)}
-            onSecret={() => discover("corner")}
-          />
-        )}
+        {notebook && <NotebookOverlay onClose={() => setNotebook(false)} onSecret={() => discover("corner")} />}
       </AnimatePresence>
 
       <p className="sr-only">
-        An illustrated café table seen from {person.firstName}&apos;s seat: a laptop, a notebook, a pen, a coffee and a mouse. Each object is a button.
+        A sunny café table seen from {person.firstName}&apos;s seat: a laptop, a notebook, a pen, a coffee, a phone, sunglasses and a mouse. Each object is a button.
       </p>
     </div>
   );

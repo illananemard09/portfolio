@@ -45,12 +45,12 @@ components/
 | Beyond the brief | Expanding panels |
 | Finale | "The work is never really finished." → "See you at the next idea." → the café table |
 
-**Café table**
+**Café table** — a sunny daylight café (white walls, window and plants, espresso machine, croissants, flowers, walnut table). Every object carries a "+" marker; on phones the table scrolls sideways.
 - **MacBook:** the camera zooms into the screen and a real desktop opens. It has a dock (with magnification), draggable windows, and working close / minimise / maximise buttons.
 - **Safari:** working tabs (LinkedIn, Portfolio, Events, Contact), back/forward, reload, and an address bar you can type in.
 - **Mail, Notes, Calendar, Files:** each has something to click. Try accepting the coffee invite.
 - **Mouse:** moves the cursor on the laptop screen and opens the contact page.
-- **Notebook, pen, coffee:** open the notebook, write with the pen, take a sip of coffee.
+- **Notebook, pen, coffee, phone, sunglasses:** open the notebook, write with the pen, sip the coffee, read the message on the phone, switch the light to golden hour.
 - **Hidden extras:** a few easter eggs. A counter appears once you find the first one.
 
 **Accessibility:** everything works with a click or tap. Every object is a real `<button>`. `Esc` closes overlays, and keyboard focus is visible. `prefers-reduced-motion` turns off smooth scroll, the loader, parallax and camera moves. The custom cursor only runs on fine pointers.

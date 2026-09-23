@@ -76,7 +76,7 @@ export function LaptopBase() {
   );
 }
 
-export function Cup({ level = 1, empty = false }: { level?: number; empty?: boolean }) {
+export function Cup({ level = 1, empty = false, dark = false }: { level?: number; empty?: boolean; dark?: boolean }) {
   return (
     <svg viewBox="0 0 200 170" className="h-full w-full overflow-visible" aria-hidden>
       <defs>
@@ -86,18 +86,18 @@ export function Cup({ level = 1, empty = false }: { level?: number; empty?: bool
           <stop offset="1" stopColor="#4a2a17" />
         </radialGradient>
         <linearGradient id="cup-body" x1="0" x2="1">
-          <stop offset="0" stopColor="#d9d3c8" />
-          <stop offset=".35" stopColor="#fbf8f2" />
-          <stop offset="1" stopColor="#c9c1b4" />
+          <stop offset="0" stopColor={dark ? "#111" : "#d9d3c8"} />
+          <stop offset=".35" stopColor={dark ? "#4a4744" : "#fbf8f2"} />
+          <stop offset="1" stopColor={dark ? "#0c0c0c" : "#c9c1b4"} />
         </linearGradient>
         <filter id="cup-soft"><feGaussianBlur stdDeviation="6" /></filter>
       </defs>
       <ellipse cx="104" cy="120" rx="92" ry="40" fill="#000" opacity=".35" filter="url(#cup-soft)" />
-      <ellipse cx="100" cy="110" rx="92" ry="44" fill="#ece6db" />
-      <ellipse cx="100" cy="106" rx="70" ry="31" fill="#ddd5c7" />
+      <ellipse cx="100" cy="110" rx="92" ry="44" fill={dark ? "#1b1a19" : "#ece6db"} />
+      <ellipse cx="100" cy="106" rx="70" ry="31" fill={dark ? "#2c2a28" : "#ddd5c7"} />
       <path d="M152 70c26 0 30 34 4 36" fill="none" stroke="url(#cup-body)" strokeWidth="11" strokeLinecap="round" />
       <path d="M40 60v30c0 20 26 32 60 32s60-12 60-32V60z" fill="url(#cup-body)" />
-      <ellipse cx="100" cy="60" rx="60" ry="26" fill="#f7f3ec" />
+      <ellipse cx="100" cy="60" rx="60" ry="26" fill={dark ? "#3a3734" : "#f7f3ec"} />
       <ellipse cx="100" cy="62" rx="53" ry="21" fill="#3b2213" />
       {!empty && (
         <motion.g animate={{ scale: level, opacity: level > 0.2 ? 1 : 0 }} transition={{ duration: 0.8 }}>
@@ -210,5 +210,79 @@ export function TentCard({ flipped }: { flipped: boolean }) {
         <span className="font-hand text-[min(1.3vw,17px)] leading-tight [@media(max-width:1023px)]:text-[3.4vw]">Reserved for your next idea</span>
       </motion.div>
     </div>
+  );
+}
+
+export function Phone({ lit }: { lit: boolean }) {
+  return (
+    <div className="relative w-full" style={{ aspectRatio: "1 / 1.35" }}>
+      <div className="absolute inset-0 translate-x-[5%] translate-y-[6%] rounded-[16%] bg-black/35 blur-[6px]" />
+      <div
+        className="absolute inset-0 rounded-[16%] bg-[#1c1c1e] p-[5%] shadow-[inset_0_0_0_2px_#6b6b70]"
+        style={{ clipPath: "polygon(10% 0, 90% 0, 100% 100%, 0 100%)" }}
+      >
+        <div
+          className="relative h-full w-full overflow-hidden rounded-[12%] transition-[filter] duration-700"
+          style={{
+            clipPath: "polygon(9% 0, 91% 0, 100% 100%, 0 100%)",
+            background: "linear-gradient(160deg,#f07a5f,#e0482c 45%,#7a2c1c)",
+            filter: lit ? "brightness(1.1)" : "brightness(.75)",
+          }}
+        >
+          <div className="grid grid-cols-4 gap-[8%] p-[14%]">
+            {["#fff", "#0a66c2", "#121110", "#1f7bf2", "#fcc933", "#28c840", "#fff", "#79bdf7"].map((c, i) => (
+              <span key={i} className="aspect-square rounded-[24%]" style={{ background: c }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function Sunglasses() {
+  return (
+    <svg viewBox="0 0 220 90" className="h-full w-full overflow-visible" aria-hidden>
+      <ellipse cx="112" cy="70" rx="100" ry="14" fill="#000" opacity=".3" style={{ filter: "blur(5px)" }} />
+      <path d="M20 30c-8-10-14-14-18-10M200 30c8-10 14-14 18-10" stroke="#2a1d16" strokeWidth="5" fill="none" strokeLinecap="round" />
+      {[62, 158].map((cx) => (
+        <g key={cx}>
+          <ellipse cx={cx} cy="46" rx="44" ry="30" fill="#2a1d16" />
+          <ellipse cx={cx} cy="46" rx="37" ry="24" fill="#3b3430" />
+          <ellipse cx={cx - 12} cy="36" rx="14" ry="6" fill="#fff" opacity=".18" />
+        </g>
+      ))}
+      <path d="M104 40q6-8 12 0" stroke="#2a1d16" strokeWidth="6" fill="none" />
+    </svg>
+  );
+}
+
+export function BurgundyNotebook() {
+  return (
+    <div className="relative w-full" style={{ aspectRatio: "10 / 7.4" }}>
+      <div className="absolute inset-0 translate-x-[3%] translate-y-[6%] bg-black/40 blur-md" style={{ clipPath: "polygon(8% 0, 94% 0, 100% 100%, 0 100%)" }} />
+      <div className="absolute inset-0 bg-[#e9e2d3]" style={{ clipPath: "polygon(8% 4%, 95% 4%, 100% 100%, 1% 100%)" }} />
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-[#8a2233] via-[#6e1a28] to-[#4b1019]"
+        style={{ clipPath: "polygon(7% 0, 93% 0, 99% 96%, 0 96%)" }}
+      >
+        <div className="absolute inset-y-0 right-[14%] w-[3%] bg-[#1d0a0e]/70" />
+        <p className="absolute left-[16%] top-[30%] font-display text-[min(1.1vw,15px)] italic text-[#f3d9b8]/80 [@media(max-width:1023px)]:text-[11px]">ideas, vol. 5</p>
+      </div>
+    </div>
+  );
+}
+
+export function PlusMarker({ label }: { label: string }) {
+  return (
+    <span aria-hidden className="pointer-events-none absolute z-10 flex items-center gap-2">
+      <span className="relative grid h-7 w-7 place-items-center rounded-full border border-black/10 bg-white/90 text-[16px] font-light leading-none text-[#121110] shadow-[0_4px_14px_rgba(40,25,10,.35)] backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:bg-[#e0482c] group-hover:text-white">
+        <span className="absolute inset-0 animate-ping rounded-full border-2 border-white/80 [animation-duration:2.4s]" />
+        +
+      </span>
+      <span className="hidden whitespace-nowrap rounded-full bg-white/90 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-[#121110] opacity-0 shadow transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 lg:block">
+        {label}
+      </span>
+    </span>
   );
 }

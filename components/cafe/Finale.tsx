@@ -64,7 +64,7 @@ export function Finale() {
           </motion.div>
           <motion.div
             aria-hidden
-            className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_60%,#6b4630,#2b1c13_60%,#140d09)]"
+            className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_60%,#fffaf2,#f3eee6_60%,#e9e1d4)]"
             style={{ clipPath: glow }}
           />
         </div>
@@ -73,9 +73,9 @@ export function Finale() {
       <CafeScene />
 
       {/* Final contact */}
-      <div className="wrap relative bg-[#140d09] pb-10 pt-24">
+      <div className="wrap relative bg-[#f3eee6] pb-10 pt-24 text-ink">
         <FadeIn>
-          <p className="eyebrow text-bone/50">Final call</p>
+          <p className="eyebrow text-ink/50">Final call</p>
           <p className="mt-6 font-display text-[clamp(48px,10vw,180px)] font-light uppercase leading-[0.85] tracking-[-0.06em]">
             Have an idea?
             <br />
@@ -83,17 +83,17 @@ export function Finale() {
           </p>
         </FadeIn>
         <div className="mt-12 flex flex-wrap gap-3">
-          <MagneticButton href={`mailto:${person.email}`} variant="accent" tone="dark" cursor="Write">
+          <MagneticButton href={`mailto:${person.email}`} variant="accent" tone="light" cursor="Write">
             {person.email}
           </MagneticButton>
-          <MagneticButton href={person.linkedin} variant="ghost" tone="dark">
+          <MagneticButton href={person.linkedin} variant="ghost" tone="light">
             LinkedIn ↗
           </MagneticButton>
         </div>
-        <footer className="mt-28 flex flex-wrap items-end justify-between gap-6 border-t border-bone/15 pt-6 text-[12px] text-bone/50">
+        <footer className="mt-28 flex flex-wrap items-end justify-between gap-6 border-t border-ink/15 pt-6 text-[12px] text-ink/50">
           <p suppressHydrationWarning>© {new Date().getFullYear()} {person.name} · {person.location}</p>
-          <p className="font-hand text-[20px] text-bone/70">Strategic mind. Creative execution. Memorable experiences.</p>
-          <a href="#home" className="uppercase tracking-[0.18em] hover:text-bone">Back to top ↑</a>
+          <p className="font-hand text-[20px] text-ink/70">Strategic mind. Creative execution. Memorable experiences.</p>
+          <a href="#home" className="uppercase tracking-[0.18em] hover:text-ink">Back to top ↑</a>
         </footer>
       </div>
     </section>
