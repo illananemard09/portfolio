@@ -79,6 +79,7 @@
   let sheetActions = null;
   function openSheet(html, actions) {
     sheetActions = actions || null;
+    document.getElementById('toast').classList.remove('is-on');
     const root = document.getElementById('sheet-root');
     root.innerHTML = `<div class="sheet-backdrop" data-act="sheet-close"></div>
       <div class="sheet" role="dialog" aria-modal="true"><div class="sheet__grip"></div>${html}</div>`;

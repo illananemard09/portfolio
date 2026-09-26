@@ -103,7 +103,6 @@
   // Bottom sheet: pick a day of the current week for a recipe. One tap, big targets.
   const DAY = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   App.DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  App.currentWeek = () => App.state.prefs.week || App.isoDate(App.mondayOf(new Date()));
 
   App.pickDay = (recipeId, servings) => {
     const r = App.getRecipe(recipeId);
