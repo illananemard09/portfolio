@@ -203,12 +203,14 @@ h1, h2, h3 { font-family: "Fraunces", Georgia, serif; font-weight: 600; letter-s
 .ing-edit { display: grid; gap: 10px; }
 .ing-row { padding: 10px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); border: 1.5px solid transparent; }
 .ing-row.is-flag { border-color: #f0c26b; background: var(--warn-soft); }
-.ing-row__top { display: grid; grid-template-columns: 72px 86px 1fr 40px; gap: 6px; align-items: center; }
+.ing-row__top { display: grid; grid-template-columns: 1fr 40px; gap: 6px; align-items: center; }
+.ing-row__bottom { display: grid; grid-template-columns: 76px 92px 1fr; gap: 6px; margin-top: 6px; }
 .ing-row .input, .ing-row .select { min-height: 46px; padding: 8px 10px; font-size: 16px; border-radius: 12px; }
+.ing-row__top .input { font-weight: 600; }
 .ing-row .select { padding-right: 26px; background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%; }
-.ing-row__bottom { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; color: var(--muted); }
-.ing-row__bottom .select { min-height: 36px; font-size: 14px; width: auto; padding: 4px 26px 4px 10px; border-radius: 999px; }
-.ing-row__flag { color: var(--warn); font-weight: 700; margin-left: auto; }
+.ing-row__bottom .select[aria-label="Aisle"] { color: var(--muted); font-size: 15px; }
+.ing-row__flag { display: flex; align-items: center; gap: 6px; color: var(--warn); font-weight: 700; font-size: 14px; margin: 8px 2px 0; }
+.ing-row__flag .ic { width: 18px; height: 18px; }
 .mini-btn { width: 40px; height: 40px; border: 0; border-radius: 12px; background: transparent; color: var(--muted); display: grid; place-items: center; }
 .mini-btn:active { background: var(--surface-2); }
 .mini-btn[disabled] { opacity: .3; }

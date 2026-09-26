@@ -58,9 +58,8 @@
   // Event delegation: any element with data-act="name" calls the current
   // screen's actions[name](el, event), falling back to global actions.
   const globalActions = {
-    'nav-back': el => {
-      if (App._navCount > 1) history.back(); else go(el.dataset.to || 'plan');
-    },
+    // Back always lands on the screen's logical parent, replacing the current entry.
+    'nav-back': el => location.replace('#/' + (el.dataset.to || 'plan')),
     'go': el => go(el.dataset.to),
     'sheet-close': () => closeSheet()
   };
@@ -139,8 +138,7 @@
     return `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || ''}</svg>`;
   }
 
-  App._navCount = 0;
-  window.addEventListener('hashchange', () => { App._navCount++; closeSheet(); render(); });
+  window.addEventListener('hashchange', () => { closeSheet(); render(); });
 
   Object.assign(App, { esc, screens, go, render, refresh, openSheet, closeSheet, toast, thumb, icon });
   Object.defineProperty(App, 'route', { get: () => current });
