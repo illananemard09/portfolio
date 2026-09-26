@@ -13,6 +13,10 @@ Coffee-shop theme: espresso and caramel browns with sage/forest green touches, p
 - **Menu card panel** — tabbed sections; Expertise is a café menu, Experience has one tab per role shown as a receipt. `Esc` closes it, and links like `index.html#experience` open a tab directly.
 - **Fonts** — Fraunces (display), DM Sans (text) and Caveat (handwritten notes), self-hosted in `fonts/` under the SIL Open Font License.
 
+## Side project: Mise
+
+`meal-planner/` holds a mobile-first meal planning prototype (recipes, weekly plan, shopping list). See [meal-planner/README.md](meal-planner/README.md).
+
 ## Preview locally
 
 Run a local server (fonts don't load from `file://`):

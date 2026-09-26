@@ -74,6 +74,7 @@
   document.addEventListener('click', e => dispatch('act', e));
   document.addEventListener('input', e => dispatch('input', e));
   document.addEventListener('change', e => dispatch('change', e));
+  document.addEventListener('submit', e => dispatch('submit', e));
 
   // ---------- Bottom sheet ----------
   let sheetActions = null;
